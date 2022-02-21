@@ -56,6 +56,22 @@
               </div>
             </div><!-- End Sales Card -->
 
+            <div>
+              <h2>DB list</h2>
+
+                {% if not testdb_list %}
+                  <p>내용이 없습니다.</p>
+                {% endif %}
+
+                  <div>
+                    {% for i in testdb_list %}
+                      <td>{{i.click_date}}</td>
+                      <td>{{i.n_click}}</td>
+                    {% endfor %}
+                  </div>
+            </div>
+
+
             <!-- Revenue Card -->
 <!--            <div class="col-xxl-4 col-md-6">-->
 <!--              <div class="card info-card revenue-card">-->

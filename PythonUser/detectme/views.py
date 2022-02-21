@@ -27,9 +27,11 @@ sys.path.append("..")
 
 from PythonUser.static.ds.yolov5.models.common import DetectMultiBackend
 from PythonUser.static.ds.yolov5.utils.datasets import IMG_FORMATS, VID_FORMATS, LoadImages, LoadStreams, letterbox
-from PythonUser.static.ds.yolov5.utils.general import (LOGGER, check_file, check_img_size, check_imshow, check_requirements, colorstr,
-                                  increment_path, non_max_suppression, print_args, scale_coords, strip_optimizer,
-                                  xyxy2xywh)
+from PythonUser.static.ds.yolov5.utils.general import (LOGGER, check_file, check_img_size, check_imshow,
+                                                       check_requirements, colorstr,
+                                                       increment_path, non_max_suppression, print_args, scale_coords,
+                                                       strip_optimizer,
+                                                       xyxy2xywh)
 from PythonUser.static.ds.yolov5.utils.plots import Annotator, colors, save_one_box
 from PythonUser.static.ds.yolov5.utils.torch_utils import select_device, time_sync
 
@@ -105,7 +107,7 @@ class VideoCamera(object):
 
         # Half
         self.half &= (
-                                 pt or jit or onnx or engine) and self.device.type != 'cpu'  # FP16 supported on limited backends with CUDA
+                             pt or jit or onnx or engine) and self.device.type != 'cpu'  # FP16 supported on limited backends with CUDA
         if pt or jit:
             self.model.model.half() if self.half else self.model.model.float()
 
@@ -208,3 +210,14 @@ def detectme(request):
     except:
         print("error!")
         pass
+
+
+# using DB part
+from .models import TestDB
+
+
+def db_list(request):
+    testdb_list = TestDB.objects.all()
+
+    return render(request, "home.html", {"testdb_list" : testdb_list})
+
