@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script>
+
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    {% include "navbar.html" %}
+
+<main id = "main">
+
+    <!-- ======= Breadcrumbs ======= -->
+    <section id="breadcrumbs" class="breadcrumbs">
+        <div class="container">
+
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Portfolio Details</h2>
+                <ol>
+                    <li><a href="index.html">Home</a></li>
+                    <li>Portfolio Details</li>
+                </ol>
+            </div>
+
+        </div>
+    </section><!-- End Breadcrumbs -->
+
+    <!-- ======= Services Section ======= -->
+    <section id="services" class="services">
+        <div class="container">
+
+            <div class="section-title" data-aos="fade-up">
+                <h2>게시판 목록</h2>
+
+                    {% if not rsBoard %}
+                        <p class="text-center">내용이 없습니다.</p>
+                    {% endif %}
+
+                <div style="...">
+                    {% for i in rsBoard %}
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr style="...">
+                                <td width="8%" align="center">{{ i.b_no }}</td>
+                                <td width="25%">{{ i.b_title }}</td>
+                                <td width="32%">{{ i.b_note }}</td>
+                                <td width="10%" align="center">{{ i.b_writer }}</td>
+                                <td width="10%" align="center">{{ i.b_date }}</td>
+                                <td width="15%" align="center" style="...">
+                                    <a href="/board_view?b_no={{i.b_no}}" class="btn btn-outliine-success">보기</a>
+                                    <a href="/board_delete?b_no={{i.b_no}}" class="btn btn-outliine-success">삭제</a>
+                                    <a href="javascript:alert('연습해보세요');" class="btn btn-outliine-success">Ajax 삭제</a>
+
+                                </td>
+
+                            </tr>
+                        </table>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        </div>
+    </section><!-- End Services Section -->
+
+</main>
+
+{% endblock %}
