@@ -4,7 +4,7 @@
 (ex: cd C:\Users\user\Desktop\django-main\PythonUser)
 
 2. 해당 터미널에서 
-''' **python manage.py runserver** ''' 명령어 실행
+``` **python manage.py runserver** ``` 명령어 실행
 
 3. 정상적으로 실행에 성공하면, 자체 생성된 로컬 ip 주소가 출력됨. 주소를 웹에 입력하면 서버 접속 가능
 
