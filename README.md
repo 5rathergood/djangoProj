@@ -13,3 +13,6 @@
 
 **★ 2번 항목 실행시 실행에 필요한 모듈들이 없을경우 설치가 필요하다고 뜨는데, 출력된 이름의 모듈들을 그대로 pip install ~을 통해 모두 설치하면 됩니다.**
 (ex: pip install django)
+
+
+(This is test commit.)
