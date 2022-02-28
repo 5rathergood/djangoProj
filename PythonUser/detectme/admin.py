@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import TestDB
+from .models import Traffic
 
 # Register your models here.
 
-admin.site.register(TestDB)
+admin.site.register(Traffic)

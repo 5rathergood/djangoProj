@@ -59,14 +59,15 @@
             <div>
               <h2>DB list</h2>
 
-                {% if not testdb_list %}
+                {% if not traffic_list %}
                   <p>내용이 없습니다.</p>
                 {% endif %}
 
                   <div>
-                    {% for i in testdb_list %}
-                      <td>{{i.click_date}}</td>
-                      <td>{{i.n_click}}</td>
+                    {% for i in traffic_list %}
+                      <td>{{i.person_id}}</td><br>
+                      <td>{{i.create_time}}</td><br>
+                      <td>{{i.delete_time}}</td><br><br>
                     {% endfor %}
                   </div>
             </div>
