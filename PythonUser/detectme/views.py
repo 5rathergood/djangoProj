@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators import gzip
 from django.http import StreamingHttpResponse
 import cv2
@@ -217,10 +217,12 @@ from .models import Traffic
 
 
 def db_list(request):
-    traffic_db = Traffic
-    traffic_db.insertData(traffic_db, 100)
-    traffic_list = Traffic.objects.all()
-
-    return render(request, "home.html", {"traffic_list" : traffic_list})
+    if request.method == 'POST':
+        traffic_db = Traffic
+        traffic_db.insertData(traffic_db, request.POST["p_id_text"])
+        return redirect('db_list')
+    else:
+        traffic_list = Traffic.objects.all()
+        return render(request, "home.html", {"traffic_list": traffic_list})
 
 
