@@ -56,6 +56,17 @@
               </div>
             </div><!-- End Sales Card -->
 
+            <!-- db insert test with post method -->
+            <div>
+              <form method="post">
+                {% csrf_token %}
+                <input type="text" name="p_id_text">
+                <button type="submit" class="btn btn-primary">person_id 입력</button>
+              </form>
+            </div>
+            <!-- End db insert test with post method -->
+
+
             <div>
               <h2>DB list</h2>
 
