@@ -213,11 +213,14 @@ def detectme(request):
 
 
 # using DB part
-from .models import TestDB
+from .models import Traffic
 
 
 def db_list(request):
-    testdb_list = TestDB.objects.all()
+    traffic_db = Traffic
+    traffic_db.insertData(traffic_db, 100)
+    traffic_list = Traffic.objects.all()
 
-    return render(request, "home.html", {"testdb_list" : testdb_list})
+    return render(request, "home.html", {"traffic_list" : traffic_list})
+
 
