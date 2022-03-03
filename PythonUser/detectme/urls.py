@@ -8,4 +8,6 @@ urlpatterns = [
     path('detectme', views.detectme, name='detectme'),
     path('', views.db_list, name='db_list'),
     path('home', views.db_list, name='db_list'),
+    path('statistics', views.statistics, name='statistics'),
+    path('analysis', views.analysis, name='analysis'),
 ]

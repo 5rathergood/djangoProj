@@ -46,10 +46,6 @@ from PythonUser.static.ds.deep_sort.deep_sort import DeepSort
 
 # Create your views here.
 
-def home(request):
-    return render(request, 'home.html')
-
-
 class VideoCamera(object):
     def __init__(self):
         weights = "static/ds/yolov5/yolov5s.pt"
@@ -226,3 +222,13 @@ def db_list(request):
         return render(request, "home.html", {"traffic_list": traffic_list})
 
 
+def home(request):
+    return render(request, 'home.html')
+
+
+def statistics(request):
+    return render(request, 'statistics.html')
+
+
+def analysis(request):
+    return render(request, 'analysis.html')
