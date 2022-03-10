@@ -227,7 +227,8 @@ def home(request):
 
 
 def statistics(request):
-    return render(request, 'statistics.html')
+    traffic_list = Traffic.objects.all()
+    return render(request, 'statistics.html', {"traffic_list": traffic_list})
 
 
 def analysis(request):
