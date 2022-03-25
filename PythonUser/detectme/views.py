@@ -258,6 +258,10 @@ def statistics(request):
     return render(request, 'statistics.html', {"traffic_list": traffic_list})
 
 
+def summary(request):
+    return render(request, 'summary.html')
+
+
 def analysis(request):
     if request.method == "POST":
         today = datetime.today()
