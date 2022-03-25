@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+  <main id="main" class=""main>
+    <div class="pagetitle">
+      <h1> 시스템 개요 </h1>
+      <hr/>
+      <h1 class="card-title"> 5히려 좋아 <span>   5Rather Good</span> </h1>
+      <hr/>
+      <h1 class="card-title"> 카메라 설치 위치 </h1>
+      <h2 class="card-title"> 광운대학교 <span>위도 : 37.61959 N | 경도 : 127.05984 E </span> </h2>
+    </div>
+    <div id="map" style="width:1250px;height:1000px;"></div>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=40d4c3986328cc91160c98cc67d1fe44"></script>
+    <script>
+		var container = document.getElementById('map');
+		var options = {
+			center: new kakao.maps.LatLng(37.61959, 127.05984),
+			level: 3
+		};
+
+		var map = new kakao.maps.Map(container, options);
+	</script>
+    <hr/>
+    <div class="row">
+      <div class="col-lg-2">
+        <section class="section dashboard">
+            <div class="card info-card sales-card">
+              <div class="card-body">
+                <div class="pagetitle">
+                  <h1 class="card-title"> 프레임워크 </h1>
+                </div>
+                <h2 class="card-title"> Django <span>4.0.2</span> </h2>
+                <h2 class="card-title"> Python <span>3.9.9</span> </h2>
+                <h2 class="card-title"> YOLOv5 </h2>
+              </div>
+            </div>
+        </section>
+      </div>
+      <div class="col-lg-2">
+        <section class="section dashboard">
+            <div class="card info-card sales-card">
+              <div class="card-body">
+                <div class="pagetitle">
+                  <h1 class="card-title"> 팀원 </h1>
+                </div>
+                  <h2 class="card-title"> 최성혁 <span> 팀장 </span> </h2>
+                  <h2 class="card-title"> 이종윤 </h2>
+                  <h2 class="card-title"> 이상윤 </h2>
+                  <h2 class="card-title"> 김보섭 </h2>
+                  <h2 class="card-title"> 박병제 </h2>
+              </div>
+            </div>
+        </section>
+      </div>
+      <div class="col-lg-6">
+        <section class="section dashboard">
+            <div class="card info-card sales-card">
+              <div class="card-body">
+                <div class="pagetitle">
+                  <h1 class="card-title"> 카메라 </h1>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <img src="static/assets/img/cctv.png" style="width:300px;height:300px;"/>
+                  </div>
+                  <div class="col-lg-8">
+                    <h1 class="card-title"> 4-inch 2 MP 25X Powered by DarkFighter IR Network Speed Dome </h1>
+                    <h2 class="card-title"> DS-2DE4225IW-DE </h2>
+                    <h2 class="card-title"> <span> • 1/2.8" progressive scan CMOS</span></h2>
+                    <h2 class="card-title"> <span> • High quality imaging with 2 MP resolution</span></h2>
+                    <h2 class="card-title"> <span> • Excellent low-light performance with powered-by-DarkFighter technology</span></h2>
+                    <h2 class="card-title"> <span> • 25× optical zoom and 16× digital zoom provide close up views over expansive areas</span></h2>
+                    <h2 class="card-title"> <span> • WDR, HLC, BLC, 3D DNR, defog, regional exposure, regional focus</span></h2>
+                    <h2 class="card-title"> <span> • Expansive night view with up to 100 m IR distance</span></h2>
+                    <h2 class="card-title"> <span> • Support H.265+/H.265 video compression</span></h2>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+{% endblock content %}
+
+</body>
+</html>
