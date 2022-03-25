@@ -6,6 +6,26 @@
     <div>
       <h1> this is analysis. </h1>
     </div>
+    <div>
+              <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">갱신</button>
+              </form>
+    </div>
+    <div>
+              <h2>DATE list</h2>
+
+                {% if not record_list %}
+                  <p>내용이 없습니다.</p>
+                {% endif %}
+
+                  <div>
+                    {% if error_message%}<p><strong>{{error_message}}</strong></p>{%endif%}
+                    {% for i in record_list %}
+                      <td>날짜:{{i.count_date}} 총인원수:{{i.all_count}}명 시간:{{i.time_1}}{{i.time_2}}{{i.time_3}}{{i.time_4}}{{i.time_5}}{{i.time_6}}{{i.time_7}}{{i.time_8}}{{i.time_9}}{{i.time_10}}{{i.time_11}}{{i.time_12}}{{i.time_13}}{{i.time_14}}{{i.time_15}}{{i.time_16}}{{i.time_17}}{{i.time_18}}{{i.time_19}}{{i.time_20}}{{i.time_21}}{{i.time_22}}{{i.time_23}}{{i.time_24}}</td><br>
+                    {% endfor %}
+                  </div>
+    </div>
   </main>
 
 {% endblock content %}
