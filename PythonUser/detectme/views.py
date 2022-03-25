@@ -1,3 +1,4 @@
+from datetime import date, time, datetime
 from django.shortcuts import render, redirect
 from django.views.decorators import gzip
 from django.http import StreamingHttpResponse
@@ -210,16 +211,42 @@ def detectme(request):
 
 # using DB part
 from .models import Traffic
+from .models import Record
 
+# def db_list(request):
+#     if request.method == 'POST':
+#         traffic_db = Traffic
+#         traffic_db.insertData(traffic_db, request.POST["p_id_text"])
+#         return redirect('db_list')
+#     else:
+#         traffic_list = Traffic.objects.all()
+#         return render(request, "home.html", {"traffic_list": traffic_list})
+#
+#
+# def home(request):
+#     return render(request, 'home.html')
+#
+#
+# def statistics(request):
+#     traffic_list = Traffic.objects.all()
+#     return render(request, 'statistics.html', {"traffic_list": traffic_list})
+#
+#
+# def analysis(request):
+#     return render(request, 'analysis.html')
 
 def db_list(request):
     if request.method == 'POST':
-        traffic_db = Traffic
-        traffic_db.insertData(traffic_db, request.POST["p_id_text"])
+        p_id = request.POST["p_id_text"]
+        today = datetime.today()
+        today_date = today.date()
+        today_time = today.strftime('%H:%M:%S')
+        Traffic.objects.create(person_id=p_id, date = today_date, time = today_time)
         return redirect('db_list')
     else:
         traffic_list = Traffic.objects.all()
-        return render(request, "home.html", {"traffic_list": traffic_list})
+        record_list = Record.objects.all()
+        return render(request, "home.html", {"traffic_list": traffic_list, "record_list": record_list})
 
 
 def home(request):
@@ -232,4 +259,32 @@ def statistics(request):
 
 
 def analysis(request):
-    return render(request, 'analysis.html')
+    if request.method == "POST":
+        today = datetime.today()
+        current_year = today.year
+        current_month = today.month
+        current_day = today.day
+        standard_time = time(0,0,0)
+        time_list = []
+        time_list2 = []
+        check_point = Record.objects.filter(count_date__year=current_year, count_date__month=current_month,
+                                            count_date__day=current_day).count()
+        if check_point < 4:
+            all_count = Traffic.objects.filter(date=today.date()).count()
+            for i in range(0,23,1):
+                time_list.insert(i,(Traffic.objects.filter(date=today.date(),time__gte=standard_time) & Traffic.objects.filter(date=today.date(),time__lte=standard_time.replace(hour=i+1))).count())
+                standard_time = standard_time.replace(hour = i+1)
+            time_list.insert(23,(Traffic.objects.filter(date=today.date(),time__gte='23:00:00') & Traffic.objects.filter(date=today.date(),time__lte='00:00:00')).count())
+            Record.objects.create(all_count=all_count, time_1=time_list[0], time_2=time_list[1], time_3=time_list[2], time_4=time_list[3],
+                                  time_5=time_list[4],
+                                  time_6=time_list[5], time_7=time_list[6], time_8=time_list[7], time_9=time_list[8], time_10=time_list[9],
+                                  time_11=time_list[10], time_12=time_list[11], time_13=time_list[12], time_14=time_list[13], time_15=time_list[14], time_16=time_list[15]
+                                  , time_17=time_list[16], time_18=time_list[17], time_19=time_list[18], time_20=time_list[19], time_21=time_list[20],
+                                  time_22=time_list[21], time_23=time_list[22], time_24=time_list[23])
+            return redirect('analysis')
+        else:
+            record_list = Record.objects.all()
+            return render(request,'analysis.html',{"record_list" : record_list, 'error_message':"Error",})
+    else:
+        record_list = Record.objects.all()
+        return render(request, 'analysis.html', {"record_list": record_list})
