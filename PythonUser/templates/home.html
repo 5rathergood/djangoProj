@@ -75,7 +75,9 @@
                 {% endif %}
 
                   <div>
+                     <td>{{traffic_list}}</td><br>
                     {% for i in traffic_list %}
+                      <td>{{i}}</td><br>
                       <td>{{i.person_id}}</td><br>
                       <td>{{i.date}}</td><br>
                       <td>{{i.time}}</td><br><br>
@@ -180,14 +182,28 @@
                   <div id="reportsChart"></div>
 
                   <script>
+                    var list = "{{record_list}}".replace(/&#x27;/g, "\"");
+                    const new_record_list = JSON.parse(list);
+
+                    var record_data = [];
+                    var record_keys = Object.keys(new_record_list[0]);
+
+                    var record_list_len = record_keys.length;
+
+                    for (var i = 1; i< record_list_len; ++i){
+                      record_data.push(new_record_list[0][record_keys[i]]);
+                      console.log(new_record_list[0][record_keys[i]]);
+                    }
+
+
                     document.addEventListener("DOMContentLoaded", () => {
                       new ApexCharts(document.querySelector("#reportsChart"), {
                         series: [{
                           name: 'Sales',
-                          data: [31, 40, 28, 51, 42, 82, 56],
+                          data: record_data,
                         }, {
                           name: 'Revenue',
-                          data: [11, 32, 45, 32, 34, 52, 41]
+                          data: [11, 32, 45, 32, 34, 52, 41, 10]
                         }, {
                           name: 'Customers',
                           data: [15, 11, 32, 18, 9, 24, 11]
@@ -221,7 +237,12 @@
                         },
                         xaxis: {
                           type: 'datetime',
-                          categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
+                          categories: ["2022-04-14T00:00:00.000Z", "2022-04-14T01:00:00.000Z", "2022-04-14T02:00:00.000Z", "2022-04-14T03:00:00.000Z",
+                                       "2022-04-14T04:00:00.000Z", "2022-04-14T05:00:00.000Z", "2022-04-14T06:00:00.000Z", "2022-04-14T07:00:00.000Z",
+                                       "2022-04-14T08:00:00.000Z", "2022-04-14T09:00:00.000Z", "2022-04-14T10:00:00.000Z", "2022-04-14T11:00:00.000Z",
+                                       "2022-04-14T12:00:00.000Z", "2022-04-14T13:00:00.000Z", "2022-04-14T14:00:00.000Z", "2022-04-14T15:00:00.000Z",
+                                       "2022-04-14T16:00:00.000Z", "2022-04-14T17:00:00.000Z", "2022-04-14T18:00:00.000Z", "2022-04-14T19:00:00.000Z",
+                                       "2022-04-14T20:00:00.000Z", "2022-04-14T21:00:00.000Z", "2022-04-14T22:00:00.000Z", "2022-04-14T23:00:00.000Z", ]
                         },
                         tooltip: {
                           x: {
