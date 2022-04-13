@@ -29,9 +29,12 @@ from django.utils import timezone
 
 
 class Traffic(models.Model):
-    person_id = models.IntegerField(default=-1)
+    person_id = models.IntegerField(default=-1, primary_key=True)
     date = models.DateField()
     time = models.TimeField()
+
+    def get_person_id(self):
+        return {'person_id': self.person_id}
 
 
 class Record(models.Model):
@@ -62,6 +65,13 @@ class Record(models.Model):
     time_24 = models.IntegerField(null=True, default=0)  # 23~24
     count_date = models.DateTimeField(default=timezone.now())
 
-
+    def get_values(self):
+        return {'all_count': self.all_count,
+                'time_1': self.time_1,   'time_2': self.time_2,   'time_3': self.time_3,   'time_4' : self.time_4,
+                'time_5': self.time_5,   'time_6': self.time_6,   'time_7': self.time_7,   'time_8' : self.time_8,
+                'time_9': self.time_9,   'time_10': self.time_10, 'time_11': self.time_11, 'time_12' : self.time_12,
+                'time_13': self.time_13, 'time_14': self.time_14, 'time_15': self.time_15, 'time_16' : self.time_16,
+                'time_17': self.time_17, 'time_18': self.time_18, 'time_19': self.time_19, 'time_20' : self.time_20,
+                'time_21': self.time_21, 'time_22': self.time_22, 'time_23': self.time_23, 'time_24' : self.time_24}
     #def __str__(self):
      #   return self.click_date
