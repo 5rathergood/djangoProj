@@ -57,13 +57,13 @@
             </div><!-- End Sales Card -->
 
             <!-- db insert test with post method -->
-            <div>
+           <!-- <div>
               <form method="post">
                 {% csrf_token %}
                 <input type="text" name="p_id_text">
                 <button type="submit" class="btn btn-primary">person_id 입력</button>
               </form>
-            </div>
+            </div>-->
             <!-- End db insert test with post method -->
 
 
@@ -75,13 +75,13 @@
                 {% endif %}
 
                   <div>
-                     <td>{{traffic_list}}</td><br>
-                    {% for i in traffic_list %}
+
+                   <!-- {% for i in traffic_list %}
                       <td>{{i}}</td><br>
                       <td>{{i.person_id}}</td><br>
                       <td>{{i.date}}</td><br>
                       <td>{{i.time}}</td><br><br>
-                    {% endfor %}
+                    {% endfor %}-->
                   </div>
             </div>
 
@@ -201,13 +201,15 @@
                         series: [{
                           name: 'Sales',
                           data: record_data,
-                        }, {
+                        },
+                        /*{
                           name: 'Revenue',
                           data: [11, 32, 45, 32, 34, 52, 41, 10]
                         }, {
                           name: 'Customers',
                           data: [15, 11, 32, 18, 9, 24, 11]
-                        }],
+                        }*/
+                        ],
                         chart: {
                           height: 350,
                           type: 'area',
