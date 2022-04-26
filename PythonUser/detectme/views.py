@@ -283,8 +283,8 @@ def db_list(request):
         today_record_list = [today_record.get_values() for today_record in today_record_list]
         print(today_record_list)
 
-        #return render(request, "home.html", {"traffic_list": traffic_list, "today_record_list": today_record_list})
-        return HttpResponse()
+        return render(request, "home.html", {"traffic_list": traffic_list, "today_record_list": today_record_list})
+        #return HttpResponse()
 
 def home(request):
     return render(request, 'home.html')
