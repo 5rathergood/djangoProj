@@ -187,10 +187,20 @@ class VideoCamera(object):
                     today = datetime.today()
                     today_date = today.date()
                     today_time = today.strftime('%H:%M:%S')
+                    today_hour = int(today.strftime('%H'))
+                    index = 'time_' + str(today_hour)
                     try:
-                        Traffic.objects.create(person_id=p_id, date=today_date, time=today_time)
+                        TodayTraffic.objects.create(person_id=p_id, date=today_date, time=today_time)
+                        #TodayTraffic.save()
                     except IntegrityError:
                         pass
+                    else:
+                        print("this is hour ", today_hour)
+                        target_row = TodayRecord.objects.first()
+                        #target_row.time_15 += 1
+                        #print(target_row.__dict__)
+                        target_row.__dict__[index] += 1
+                        target_row.save()
 
                     # print(bboxes, id)
 
@@ -221,16 +231,15 @@ def detectme(request):
 
 
 # using DB part
-from .models import Traffic
-from .models import Record
+from .models import TodayTraffic, TodayRecord, Record
 
 # def db_list(request):
 #     if request.method == 'POST':
-#         traffic_db = Traffic
+#         traffic_db = TodayTraffic
 #         traffic_db.insertData(traffic_db, request.POST["p_id_text"])
 #         return redirect('db_list')
 #     else:
-#         traffic_list = Traffic.objects.all()
+#         traffic_list = TodayTraffic.objects.all()
 #         return render(request, "home.html", {"traffic_list": traffic_list})
 #
 #
@@ -239,7 +248,7 @@ from .models import Record
 #
 #
 # def statistics(request):
-#     traffic_list = Traffic.objects.all()
+#     traffic_list = TodayTraffic.objects.all()
 #     return render(request, 'statistics.html', {"traffic_list": traffic_list})
 #
 #
@@ -252,25 +261,37 @@ def db_list(request):
         today = datetime.today()
         today_date = today.date()
         today_time = today.strftime('%H:%M:%S')
-        try :
-            Traffic.objects.create(person_id=p_id, date = today_date, time = today_time)
+        try:
+            TodayTraffic.objects.create(person_id=p_id, date=today_date, time=today_time)
         except IntegrityError:
             pass
         return redirect('db_list')
     else:
-        traffic_list = Traffic.objects.all()
-        traffic_list = [traffic.get_person_id() for traffic in traffic_list]
-        record_list = Record.objects.all()
-        record_list = [record.get_values() for record in record_list]
-        return render(request, "home.html", {"traffic_list": traffic_list, "record_list": record_list})
+        #최초 실행시 today_record_list가 비어있다면 default row를 하나 생성
+        print("run GET")
+        today_record_list = TodayRecord.objects.all()
+        if len(today_record_list) == 0:
+            first_low = TodayRecord.objects.create()
+            first_low.save()
 
+        #TodayTraffic.objects.bulk_update()
+        traffic_list = TodayTraffic.objects.all()
+
+        traffic_list = [traffic.get_person_id() for traffic in traffic_list]
+        #record_list = Record.objects.all()
+        #record_list = [record.get_values() for record in record_list]
+        today_record_list = [today_record.get_values() for today_record in today_record_list]
+        print(today_record_list)
+
+        #return render(request, "home.html", {"traffic_list": traffic_list, "today_record_list": today_record_list})
+        return HttpResponse()
 
 def home(request):
     return render(request, 'home.html')
 
 
 def statistics(request):
-    traffic_list = Traffic.objects.all()
+    traffic_list = TodayTraffic.objects.all()
     return render(request, 'statistics.html', {"traffic_list": traffic_list})
 
 
@@ -290,11 +311,11 @@ def analysis(request):
         check_point = Record.objects.filter(count_date__year=current_year, count_date__month=current_month,
                                             count_date__day=current_day).count()
         if check_point < 4:
-            all_count = Traffic.objects.filter(date=today.date()).count()
+            all_count = TodayTraffic.objects.filter(date=today.date()).count()
             for i in range(0,23,1):
-                time_list.insert(i,(Traffic.objects.filter(date=today.date(),time__gte=standard_time) & Traffic.objects.filter(date=today.date(),time__lte=standard_time.replace(hour=i+1))).count())
+                time_list.insert(i, (TodayTraffic.objects.filter(date=today.date(), time__gte=standard_time) & TodayTraffic.objects.filter(date=today.date(), time__lte=standard_time.replace(hour=i + 1))).count())
                 standard_time = standard_time.replace(hour = i+1)
-            time_list.insert(23,(Traffic.objects.filter(date=today.date(),time__gte='23:00:00') & Traffic.objects.filter(date=today.date(),time__lte='00:00:00')).count())
+            time_list.insert(23, (TodayTraffic.objects.filter(date=today.date(), time__gte='23:00:00') & TodayTraffic.objects.filter(date=today.date(), time__lte='00:00:00')).count())
             Record.objects.create(all_count=all_count,
                                   time_1=time_list[0], time_2=time_list[1], time_3=time_list[2], time_4=time_list[3],
                                   time_5=time_list[4], time_6=time_list[5], time_7=time_list[6], time_8=time_list[7],
@@ -302,7 +323,7 @@ def analysis(request):
                                   time_13=time_list[12], time_14=time_list[13], time_15=time_list[14], time_16=time_list[15],
                                   time_17=time_list[16], time_18=time_list[17], time_19=time_list[18], time_20=time_list[19],
                                   time_21=time_list[20], time_22=time_list[21], time_23=time_list[22], time_24=time_list[23],)
-            Traffic.objects.all().delete()
+            TodayTraffic.objects.all().delete()
             return redirect('analysis')
         else:
             record_list = Record.objects.all()
