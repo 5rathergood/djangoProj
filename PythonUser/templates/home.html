@@ -56,33 +56,33 @@
             </div><!-- End Sales Card -->
 
             <!-- db insert test with post method -->
-            <div>
-              <form method="post">
-                {% csrf_token %}
-                <input type="text" name="p_id_text">
-                <button type="submit" class="btn btn-primary">person_id 입력</button>
-              </form>
-            </div>
+<!--            <div>-->
+<!--              <form method="post">-->
+<!--                {% csrf_token %}-->
+<!--                <input type="text" name="p_id_text">-->
+<!--                <button type="submit" class="btn btn-primary">person_id 입력</button>-->
+<!--              </form>-->
+<!--            </div>-->
             <!-- End db insert test with post method -->
 
 
-            <div>
-              <h2>DB list</h2>
+<!--            <div>-->
+<!--              <h2>DB list</h2>-->
 
-                {% if not traffic_list %}
-                  <p>내용이 없습니다.</p>
-                {% endif %}
+<!--                {% if not traffic_list %}-->
+<!--                  <p>내용이 없습니다.</p>-->
+<!--                {% endif %}-->
 
-                  <div>
+<!--                  <div>-->
 
-                    {% for i in traffic_list %}
-                      <td>{{i}}</td><br>
-                      <td>{{i.person_id}}</td><br>
-                      <td>{{i.date}}</td><br>
-                      <td>{{i.time}}</td><br><br>
-                    {% endfor %}
-                  </div>
-            </div>
+<!--                    {% for i in traffic_list %}-->
+<!--                      <td>{{i}}</td><br>-->
+<!--                      <td>{{i.person_id}}</td><br>-->
+<!--                      <td>{{i.date}}</td><br>-->
+<!--                      <td>{{i.time}}</td><br><br>-->
+<!--                    {% endfor %}-->
+<!--                  </div>-->
+<!--            </div>-->
 
 
             <!-- Revenue Card -->
@@ -157,10 +157,6 @@
 
 <!--            </div>&lt;!&ndash; End Customers Card &ndash;&gt;-->
 
-            <button id="search_button" type="submit" class="btn btn-primary">버튼</button>
-            <script>
-
-            </script>
             <!-- Reports -->
             <div class="col-12">
               <div class="card">
@@ -180,170 +176,165 @@
 
                 <div class="card-body">
                   <h5 class="card-title">Reports <span>/Today</span></h5>
+                  <button id="refresh_button" type="submit" class="btn btn-primary">수동 갱신</button>
+                  <script>
 
+                  </script>
 
                   <!-- Line Chart -->
-                  <div id="reportsChart"></div>
+                  <div id="today_chart"></div>
                   <script>
-                       var list = "{{today_record_list}}".replace(/&#x27;/g, "\"");
-                        const new_record_list = JSON.parse(list);
+                      jQuery(document).ready(function () {
+                          /*var list = "{{today_record_list}}".replace(/&#x27;/g, "\"");
+                          const new_record_list = JSON.parse(list);
 
-                        var record_data = [];
-                        var record_keys = Object.keys(new_record_list[0]);
+                          var record_data = [];
+                          var record_keys = Object.keys(new_record_list[0]);
 
-                        var record_list_len = record_keys.length;
+                          var record_list_len = record_keys.length;
 
-                        for (var i = 1; i< record_list_len; ++i){
-                          record_data.push(new_record_list[0][record_keys[i]]);
-                          console.log(new_record_list[0][record_keys[i]]);
-                        }
+                          for (var i = 1; i< record_list_len; ++i){
+                            record_data.push(new_record_list[0][record_keys[i]]);
+                            console.log(new_record_list[0][record_keys[i]]);
+                          }*/
 
-                        /* 그래프 그리는 부분 */
-                        document.addEventListener("DOMContentLoaded", () => {
-                          new ApexCharts(document.querySelector("#reportsChart"), {
-                            series: [{
-                              name: 'Sales',
-                              data: record_data,
-                            },
-                            /*{
-                              name: 'Revenue',
-                              data: [11, 32, 45, 32, 34, 52, 41, 10]
-                            }, {
-                              name: 'Customers',
-                              data: [15, 11, 32, 18, 9, 24, 11]
-                            }*/
-                            ],
-                            chart: {
-                              height: 350,
-                              type: 'area',
-                              toolbar: {
-                                show: false
+                          var today_record_list = "{{today_record_list}}".replace(/&#x27;/g, "\"");
+                          const json_today_record_list = JSON.parse(today_record_list);
+
+                          var graph_data = [];
+                          var json_today_record_list_keys = Object.keys(json_today_record_list[0]);
+
+                          var graph_data_len = json_today_record_list_keys.length;
+
+                          for (var i = 1; i< graph_data_len; ++i){
+                            graph_data.push(json_today_record_list[0][json_today_record_list_keys[i]]);
+                            console.log(json_today_record_list[0][json_today_record_list_keys[i]]);
+                          }
+
+                          const apexChart = "#today_chart";
+
+                          var options = {
+                              series: [{
+                                name: 'Sales',
+                                data: graph_data,
                               },
-                            },
-                            markers: {
-                              size: 4
-                            },
-                            colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                            fill: {
-                              type: "gradient",
-                              gradient: {
-                                shadeIntensity: 1,
-                                opacityFrom: 0.3,
-                                opacityTo: 0.4,
-                                stops: [0, 90, 100]
+                              /*{
+                                name: 'Revenue',
+                                data: [11, 32, 45, 32, 34, 52, 41, 10]
+                              }, {
+                                name: 'Customers',
+                                data: [15, 11, 32, 18, 9, 24, 11]
+                              }*/
+                              ],
+                              chart: {
+                                height: 350,
+                                type: 'area',
+                                toolbar: {
+                                  show: false
+                                },
+                              },
+                              markers: {
+                                size: 4
+                              },
+                              colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                              fill: {
+                                type: "gradient",
+                                gradient: {
+                                  shadeIntensity: 1,
+                                  opacityFrom: 0.3,
+                                  opacityTo: 0.4,
+                                  stops: [0, 90, 100]
+                                }
+                              },
+                              dataLabels: {
+                                enabled: false
+                              },
+                              stroke: {
+                                curve: 'smooth',
+                                width: 2
+                              },
+                              xaxis: {
+                                type: 'datetime',
+                                categories: ["2022-04-14T00:30:00.000Z", "2022-04-14T01:30:00.000Z", "2022-04-14T02:30:00.000Z", "2022-04-14T03:30:00.000Z",
+                                             "2022-04-14T04:30:00.000Z", "2022-04-14T05:30:00.000Z", "2022-04-14T06:30:00.000Z", "2022-04-14T07:30:00.000Z",
+                                             "2022-04-14T08:30:00.000Z", "2022-04-14T09:30:00.000Z", "2022-04-14T10:30:00.000Z", "2022-04-14T11:30:00.000Z",
+                                             "2022-04-14T12:30:00.000Z", "2022-04-14T13:30:00.000Z", "2022-04-14T14:30:00.000Z", "2022-04-14T15:30:00.000Z",
+                                             "2022-04-14T16:30:00.000Z", "2022-04-14T17:30:00.000Z", "2022-04-14T18:30:00.000Z", "2022-04-14T19:30:00.000Z",
+                                             "2022-04-14T20:30:00.000Z", "2022-04-14T21:30:00.000Z", "2022-04-14T22:30:00.000Z", "2022-04-14T23:30:00.000Z" ]
+                              },
+                              tooltip: {
+                                x: {
+                                  format: 'dd/MM/yy HH:mm'
+                                },
                               }
-                            },
-                            dataLabels: {
-                              enabled: false
-                            },
-                            stroke: {
-                              curve: 'smooth',
-                              width: 2
-                            },
-                            xaxis: {
-                              type: 'datetime',
-                              categories: ["2022-04-14T00:00:00.000Z", "2022-04-14T01:00:00.000Z", "2022-04-14T02:00:00.000Z", "2022-04-14T03:00:00.000Z",
-                                           "2022-04-14T04:00:00.000Z", "2022-04-14T05:00:00.000Z", "2022-04-14T06:00:00.000Z", "2022-04-14T07:00:00.000Z",
-                                           "2022-04-14T08:00:00.000Z", "2022-04-14T09:00:00.000Z", "2022-04-14T10:00:00.000Z", "2022-04-14T11:00:00.000Z",
-                                           "2022-04-14T12:00:00.000Z", "2022-04-14T13:00:00.000Z", "2022-04-14T14:00:00.000Z", "2022-04-14T15:00:00.000Z",
-                                           "2022-04-14T16:00:00.000Z", "2022-04-14T17:00:00.000Z", "2022-04-14T18:00:00.000Z", "2022-04-14T19:00:00.000Z",
-                                           "2022-04-14T20:00:00.000Z", "2022-04-14T21:00:00.000Z", "2022-04-14T22:00:00.000Z", "2022-04-14T23:00:00.000Z", ]
-                            },
-                            tooltip: {
-                              x: {
-                                format: 'dd/MM/yy HH:mm'
-                              },
-                            }
-                          }).render();
-                        });
+                          };
 
-                    $(document).ready(function(){
-                      alert("hello1")
-                      $('#reportsChart').click(function(){
-                        alert("hello2")
-                        $.ajax({ url:'',
-                                  type:'get',
-                                  success:function(data){
-                                    var list = "{{today_record_list}}".replace(/&#x27;/g, "\"");
-                                    const new_record_list = JSON.parse(list);
+                          var chart = new ApexCharts(document.querySelector(apexChart), options);
+                          chart.render();
 
-                                    var record_data = [];
-                                    var record_keys = Object.keys(new_record_list[0]);
+                          //그래프 갱신 - 버튼 클릭 (추후 삭제 예정)
+                          $('#refresh_button').click(function(){
+                              //alert("refresh");
 
-                                    var record_list_len = record_keys.length;
+                              $.ajax({
+                                  url: "db_list",
+                                  type: 'GET',
+                                  async: true,
+                                  cache: false,
 
-                                    for (var i = 1; i< record_list_len; ++i){
-                                      record_data.push(new_record_list[0][record_keys[i]]);
-                                      console.log(new_record_list[0][record_keys[i]]);
-                                      console.log("test");
-                                    }
+                                  success: function (response) {
+                                      //closeLoadingDialog('#container');
+                                      console.log(JSON.stringify(response));
+                                      var ajax_json_obj = response;
+                                      var ajax_json_obj_keys = Object.keys(ajax_json_obj);
 
-                                    /* 그래프 그리는 부분 */
-                                    document.addEventListener("DOMContentLoaded", () => {
-                                      new ApexCharts(document.querySelector("#reportsChart"), {
-                                        series: [{
-                                          name: 'Sales',
-                                          data: record_data,
-                                        },
-                                        /*{
-                                          name: 'Revenue',
-                                          data: [11, 32, 45, 32, 34, 52, 41, 10]
-                                        }, {
-                                          name: 'Customers',
-                                          data: [15, 11, 32, 18, 9, 24, 11]
-                                        }*/
-                                        ],
-                                        chart: {
-                                          height: 350,
-                                          type: 'area',
-                                          toolbar: {
-                                            show: false
-                                          },
-                                        },
-                                        markers: {
-                                          size: 4
-                                        },
-                                        colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                                        fill: {
-                                          type: "gradient",
-                                          gradient: {
-                                            shadeIntensity: 1,
-                                            opacityFrom: 0.3,
-                                            opacityTo: 0.4,
-                                            stops: [0, 90, 100]
-                                          }
-                                        },
-                                        dataLabels: {
-                                          enabled: false
-                                        },
-                                        stroke: {
-                                          curve: 'smooth',
-                                          width: 2
-                                        },
-                                        xaxis: {
-                                          type: 'datetime',
-                                          categories: ["2022-04-14T00:00:00.000Z", "2022-04-14T01:00:00.000Z", "2022-04-14T02:00:00.000Z", "2022-04-14T03:00:00.000Z",
-                                                       "2022-04-14T04:00:00.000Z", "2022-04-14T05:00:00.000Z", "2022-04-14T06:00:00.000Z", "2022-04-14T07:00:00.000Z",
-                                                       "2022-04-14T08:00:00.000Z", "2022-04-14T09:00:00.000Z", "2022-04-14T10:00:00.000Z", "2022-04-14T11:00:00.000Z",
-                                                       "2022-04-14T12:00:00.000Z", "2022-04-14T13:00:00.000Z", "2022-04-14T14:00:00.000Z", "2022-04-14T15:00:00.000Z",
-                                                       "2022-04-14T16:00:00.000Z", "2022-04-14T17:00:00.000Z", "2022-04-14T18:00:00.000Z", "2022-04-14T19:00:00.000Z",
-                                                       "2022-04-14T20:00:00.000Z", "2022-04-14T21:00:00.000Z", "2022-04-14T22:00:00.000Z", "2022-04-14T23:00:00.000Z", ]
-                                        },
-                                        tooltip: {
-                                          x: {
-                                            format: 'dd/MM/yy HH:mm'
-                                          },
-                                        }
-                                      }).render();
-                                    });
-                                  },
-                                  error:function(request, status, error){
-                                    alert("fail")
+                                      var ajax_graph_data = [];
+                                      var ajax_graph_data_len = ajax_json_obj_keys.length;
+
+                                      for (var i = 1; i< ajax_graph_data_len; ++i){
+                                        ajax_graph_data.push(ajax_json_obj[ajax_json_obj_keys[i]]);
+                                      }
+
+                                      chart.updateSeries([{
+                                          name: 'Speed',
+                                          data: ajax_graph_data
+                                      }]);
                                   }
-                        })
-                      });
-                    });
+                              });
+                          });
 
+                          //그래프 갱신 - 자동 갱신 (목표)
+                          $(function(){
+                              timer = setInterval( function() {
+                                  $.ajax({
+                                      url: "db_list",
+                                      type: 'GET',
+                                      async: true,
+                                      cache: false,
+
+                                      success: function (response) {
+                                          //closeLoadingDialog('#container');
+                                          console.log(JSON.stringify(response));
+                                          var ajax_json_obj = response;
+                                          var ajax_json_obj_keys = Object.keys(ajax_json_obj);
+
+                                          var ajax_graph_data = [];
+                                          var ajax_graph_data_len = ajax_json_obj_keys.length;
+
+                                          for (var i = 1; i< ajax_graph_data_len; ++i){
+                                            ajax_graph_data.push(ajax_json_obj[ajax_json_obj_keys[i]]);
+                                          }
+
+                                          chart.updateSeries([{
+                                              name: 'Speed',
+                                              data: ajax_graph_data
+                                          }]);
+                                      }
+                                  });
+                              }, 2000);
+                          });
+
+                      });
                   </script>
                   <!-- End Line Chart -->
 

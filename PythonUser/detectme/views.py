@@ -1,7 +1,7 @@
 from datetime import date, time, datetime
 from django.shortcuts import render, redirect
 from django.views.decorators import gzip
-from django.http import StreamingHttpResponse
+from django.http import StreamingHttpResponse, JsonResponse
 from django.db import IntegrityError
 import cv2
 import threading
@@ -188,10 +188,9 @@ class VideoCamera(object):
                     today_date = today.date()
                     today_time = today.strftime('%H:%M:%S')
                     today_hour = int(today.strftime('%H'))
-                    index = 'time_' + str(today_hour)
+                    index = 'time_' + str(today_hour + 1)
                     try:
                         TodayTraffic.objects.create(person_id=p_id, date=today_date, time=today_time)
-                        #TodayTraffic.save()
                     except IntegrityError:
                         pass
                     else:
@@ -255,7 +254,8 @@ from .models import TodayTraffic, TodayRecord, Record
 # def analysis(request):
 #     return render(request, 'analysis.html')
 
-def db_list(request):
+
+def home(request):
     if request.method == 'POST':
         p_id = request.POST["p_id_text"]
         today = datetime.today()
@@ -265,10 +265,9 @@ def db_list(request):
             TodayTraffic.objects.create(person_id=p_id, date=today_date, time=today_time)
         except IntegrityError:
             pass
-        return redirect('db_list')
+        return redirect('home')
     else:
         #최초 실행시 today_record_list가 비어있다면 default row를 하나 생성
-        print("run GET")
         today_record_list = TodayRecord.objects.all()
         if len(today_record_list) == 0:
             first_low = TodayRecord.objects.create()
@@ -283,11 +282,24 @@ def db_list(request):
         today_record_list = [today_record.get_values() for today_record in today_record_list]
         print(today_record_list)
 
-        #return render(request, "home.html", {"traffic_list": traffic_list, "today_record_list": today_record_list})
-        return HttpResponse()
+        return render(request, "home.html", {"traffic_list": traffic_list, "today_record_list": today_record_list})
 
-def home(request):
-    return render(request, 'home.html')
+
+def db_list(request):
+    today_record_list = TodayRecord.objects.all()
+    if len(today_record_list) == 0:
+        first_low = TodayRecord.objects.create()
+        first_low.save()
+
+    # TodayTraffic.objects.bulk_update()
+    traffic_list = TodayTraffic.objects.all()
+
+    traffic_list = [traffic.get_person_id() for traffic in traffic_list]
+    # record_list = Record.objects.all()
+    # record_list = [record.get_values() for record in record_list]
+    today_record_list = [today_record.get_values() for today_record in today_record_list]
+
+    return JsonResponse(today_record_list[0])
 
 
 def statistics(request):
