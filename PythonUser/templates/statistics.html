@@ -3,279 +3,411 @@
 
 {% block content %}
   <main id="main" class=""main>
-    <div>
-      <h1> this is statistics. </h1>
+      <h1> Statistics Page. </h1>
 
-        <!-- Left side columns -->
-        <div class="col-lg-8">
-            <!-- start row -->
-            <div class="col-12">
-                <!-- start Day element -->
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Today</h5>
+        <section class="section dashboard">
+            <div class="row">
+                <!-- Left side columns -->
+                <div class="col-lg-8">
+                    <!-- start row -->
+                    <div class="col-12">
+                        <!-- start Day element -->
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Today</h5>
 
-                        <!-- Line Chart -->
-                        <div id="dayChart">
+                                <!-- Line Chart -->
+                                <div id="dayChart">
+                                </div>
+
+                                <script>
+                                document.addEventListener("DOMContentLoaded", () => {
+                                  new ApexCharts(document.querySelector("#dayChart"), {
+                                    series: [{
+                                      name: 'Sales',
+                                      data: [31, 40, 28, 51, 42, 82, "56"],
+                                    }, {
+                                      name: 'Revenue',
+                                      data: [11, 32, 45, 32, 34, 52, 41]
+                                    }, {
+                                      name: 'Customers',
+                                      data: [15, 11, 32, 18, 9, 24, 11]
+                                    }],
+                                    chart: {
+                                      height: 350,
+                                      type: 'area',
+                                      toolbar: {
+                                        show: false
+                                      },
+                                    },
+                                    markers: {
+                                      size: 4
+                                    },
+                                    colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                                    fill: {
+                                      type: "gradient",
+                                      gradient: {
+                                        shadeIntensity: 1,
+                                        opacityFrom: 0.3,
+                                        opacityTo: 0.4,
+                                        stops: [0, 90, 100]
+                                      }
+                                    },
+                                    dataLabels: {
+                                      enabled: false
+                                    },
+                                    stroke: {
+                                      curve: 'smooth',
+                                      width: 2
+                                    },
+                                    xaxis: {
+                                      type: 'datetime',
+                                      categories: ["2018-09-19T00:30:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
+                                    },
+                                    tooltip: {
+                                      x: {
+                                        format: 'dd/MM/yy HH:mm'
+                                      },
+                                    }
+                                  }).render();
+                                });
+
+                                </script>
+                                <!-- End Line Chart -->
+                            </div>
                         </div>
+                        <!-- End Day Element -->
 
-                        <script>
+                        <!-- Start Week element -->
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Week</h5>
+
+                                <div id="weekChart" style="min-height: 400px;" class="echart"></div>
+
+
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", () => {
+                                      new ApexCharts(document.querySelector("#weekChart"), {
+                                        series: [{
+                                          name: 'Sales',
+                                          data: [31, 40, 28, 51, 42, 82, "56"],
+                                        }, {
+                                          name: 'Revenue',
+                                          data: [11, 32, 45, 32, 34, 52, 41]
+                                        }, {
+                                          name: 'Customers',
+                                          data: [15, 11, 32, 18, 9, 24, 11]
+                                        }],
+                                        chart: {
+                                          height: 350,
+                                          type: 'area',
+                                          toolbar: {
+                                            show: false
+                                          },
+                                        },
+                                        markers: {
+                                          size: 4
+                                        },
+                                        colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                                        fill: {
+                                          type: "gradient",
+                                          gradient: {
+                                            shadeIntensity: 1,
+                                            opacityFrom: 0.3,
+                                            opacityTo: 0.4,
+                                            stops: [0, 90, 100]
+                                          }
+                                        },
+                                        dataLabels: {
+                                          enabled: false
+                                        },
+                                        stroke: {
+                                          curve: 'smooth',
+                                          width: 2
+                                        },
+                                        xaxis: {
+                                          type: 'datetime',
+                                          categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
+                                        },
+                                        tooltip: {
+                                          x: {
+                                            format: 'dd/MM/yy HH:mm'
+                                          },
+                                        }
+                                      }).render();
+                                    });
+                                  </script>
+
+                            </div>
+                        </div>
+                        <!-- End Week element -->
+
+                        <!-- Start Month element -->
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Month</h5>
+
+                                <div id="monthChart" style="min-height: 400px;" class="echart"></div>
+
+
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", () => {
+                                      new ApexCharts(document.querySelector("#monthChart"), {
+                                        series: [{
+                                          name: 'Sales',
+                                          data: [31, 40, 28, 51, 42, 82, "56"],
+                                        }, {
+                                          name: 'Revenue',
+                                          data: [11, 32, 45, 32, 34, 52, 41]
+                                        }, {
+                                          name: 'Customers',
+                                          data: [15, 11, 32, 18, 9, 24, 11]
+                                        }],
+                                        chart: {
+                                          height: 350,
+                                          type: 'area',
+                                          toolbar: {
+                                            show: false
+                                          },
+                                        },
+                                        markers: {
+                                          size: 4
+                                        },
+                                        colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                                        fill: {
+                                          type: "gradient",
+                                          gradient: {
+                                            shadeIntensity: 1,
+                                            opacityFrom: 0.3,
+                                            opacityTo: 0.4,
+                                            stops: [0, 90, 100]
+                                          }
+                                        },
+                                        dataLabels: {
+                                          enabled: false
+                                        },
+                                        stroke: {
+                                          curve: 'smooth',
+                                          width: 2
+                                        },
+                                        xaxis: {
+                                          type: 'datetime',
+                                          categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
+                                        },
+                                        tooltip: {
+                                          x: {
+                                            format: 'dd/MM/yy HH:mm'
+                                          },
+                                        }
+                                      }).render();
+                                    });
+                                  </script>
+
+                            </div>
+                        </div>
+                        <!-- End Month element -->
+
+                        <!-- Start Year element -->
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Year</h5>
+
+                                <div id="yearChart" style="min-height: 400px;" class="echart"></div>
+
+
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", () => {
+                                      new ApexCharts(document.querySelector("#yearChart"), {
+                                        series: [{
+                                          name: 'Sales',
+                                          data: [31, 40, 28, 51, 42, 82, "56"],
+                                        }, {
+                                          name: 'Revenue',
+                                          data: [11, 32, 45, 32, 34, 52, 41]
+                                        }, {
+                                          name: 'Customers',
+                                          data: [15, 11, 32, 18, 9, 24, 11]
+                                        }],
+                                        chart: {
+                                          height: 350,
+                                          type: 'area',
+                                          toolbar: {
+                                            show: false
+                                          },
+                                        },
+                                        markers: {
+                                          size: 4
+                                        },
+                                        colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                                        fill: {
+                                          type: "gradient",
+                                          gradient: {
+                                            shadeIntensity: 1,
+                                            opacityFrom: 0.3,
+                                            opacityTo: 0.4,
+                                            stops: [0, 90, 100]
+                                          }
+                                        },
+                                        dataLabels: {
+                                          enabled: false
+                                        },
+                                        stroke: {
+                                          curve: 'smooth',
+                                          width: 2
+                                        },
+                                        xaxis: {
+                                          type: 'datetime',
+                                          categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
+                                        },
+                                        tooltip: {
+                                          x: {
+                                            format: 'dd/MM/yy HH:mm'
+                                          },
+                                        }
+                                      }).render();
+                                    });
+                                  </script>
+
+                            </div>
+                        </div>
+                        <!-- End Year element -->
+
+                    </div>
+                    <!-- End Row -->
+                </div>
+
+
+                 <!-- Right side columns -->
+                <div class="col-lg-4">
+
+                    <!-- Pie Chart -->
+                  <div class="card">
+                    <div class="filter">
+                      <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                      <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                        <li class="dropdown-header text-start">
+                          <h6>Filter</h6>
+                        </li>
+
+                        <li><a class="dropdown-item" href="#">Today</a></li>
+                        <li><a class="dropdown-item" href="#">This Month</a></li>
+                        <li><a class="dropdown-item" href="#">This Year</a></li>
+                      </ul>
+                    </div>
+
+                    <div class="card-body pb-0">
+                      <h5 class="card-title">Gender <span>| Male & Female</span></h5>
+
+                      <div id="pieChart"></div>
+
+                      <script>
                         document.addEventListener("DOMContentLoaded", () => {
-                          new ApexCharts(document.querySelector("#dayChart"), {
-                            series: [{
-                              name: 'Sales',
-                              data: [31, 40, 28, 51, 42, 82, "56"],
-                            }, {
-                              name: 'Revenue',
-                              data: [11, 32, 45, 32, 34, 52, 41]
-                            }, {
-                              name: 'Customers',
-                              data: [15, 11, 32, 18, 9, 24, 11]
-                            }],
+                          new ApexCharts(document.querySelector("#pieChart"), {
+                            series: [45, 55],
                             chart: {
                               height: 350,
-                              type: 'area',
+                              type: 'pie',
                               toolbar: {
-                                show: false
-                              },
-                            },
-                            markers: {
-                              size: 4
-                            },
-                            colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                            fill: {
-                              type: "gradient",
-                              gradient: {
-                                shadeIntensity: 1,
-                                opacityFrom: 0.3,
-                                opacityTo: 0.4,
-                                stops: [0, 90, 100]
+                                show: true
                               }
                             },
-                            dataLabels: {
-                              enabled: false
-                            },
-                            stroke: {
-                              curve: 'smooth',
-                              width: 2
-                            },
-                            xaxis: {
-                              type: 'datetime',
-                              categories: ["2018-09-19T00:30:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
-                            },
-                            tooltip: {
-                              x: {
-                                format: 'dd/MM/yy HH:mm'
-                              },
-                            }
+                            labels: ['여자', '남자'],
+                            colors: ['#FC0101', '#312BEA'],
                           }).render();
                         });
+                      </script>
 
-                        </script>
-                        <!-- End Line Chart -->
+
+                    </div> <!-- End Pie Chart -->
+                  </div><!-- End Budget Report -->
+
+
+                    <!-- Website TodayTraffic -->
+                  <div class="card">
+                    <div class="filter">
+                      <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                      <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                        <li class="dropdown-header text-start">
+                          <h6>Filter</h6>
+                        </li>
+
+                        <li><a class="dropdown-item" href="#">Today</a></li>
+                        <li><a class="dropdown-item" href="#">This Month</a></li>
+                        <li><a class="dropdown-item" href="#">This Year</a></li>
+                      </ul>
                     </div>
-                </div>
-                <!-- End Day Element -->
 
-                <!-- Start Week element -->
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Week</h5>
+                      <!-- Donut Chart -->
+                    <div class="card-body pb-0">
+                      <h5 class="card-title">Type Ratio <span>| Type of People</span></h5>
 
-                        <div id="weekChart" style="min-height: 400px;" class="echart"></div>
+                      <div id="Donutechart" style="min-height: 400px;" class="echart"></div>
 
-
-                        <script>
-                            document.addEventListener("DOMContentLoaded", () => {
-                              new ApexCharts(document.querySelector("#weekChart"), {
-                                series: [{
-                                  name: 'Sales',
-                                  data: [31, 40, 28, 51, 42, 82, "56"],
-                                }, {
-                                  name: 'Revenue',
-                                  data: [11, 32, 45, 32, 34, 52, 41]
-                                }, {
-                                  name: 'Customers',
-                                  data: [15, 11, 32, 18, 9, 24, 11]
-                                }],
-                                chart: {
-                                  height: 350,
-                                  type: 'area',
-                                  toolbar: {
-                                    show: false
-                                  },
-                                },
-                                markers: {
-                                  size: 4
-                                },
-                                colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                                fill: {
-                                  type: "gradient",
-                                  gradient: {
-                                    shadeIntensity: 1,
-                                    opacityFrom: 0.3,
-                                    opacityTo: 0.4,
-                                    stops: [0, 90, 100]
-                                  }
-                                },
-                                dataLabels: {
-                                  enabled: false
-                                },
-                                stroke: {
-                                  curve: 'smooth',
-                                  width: 2
-                                },
-                                xaxis: {
-                                  type: 'datetime',
-                                  categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
-                                },
-                                tooltip: {
-                                  x: {
-                                    format: 'dd/MM/yy HH:mm'
-                                  },
+                      <script>
+                        document.addEventListener("DOMContentLoaded", () => {
+                          echarts.init(document.querySelector("#Donutechart")).setOption({
+                            tooltip: {
+                              trigger: 'item'
+                            },
+                            legend: {
+                              top: '5%',
+                              left: 'center'
+                            },
+                            series: [{
+                              name: 'Access From',
+                              type: 'pie',
+                              radius: ['40%', '70%'],
+                              avoidLabelOverlap: false,
+                              label: {
+                                show: false,
+                                position: 'center'
+                              },
+                              emphasis: {
+                                label: {
+                                  show: true,
+                                  fontSize: '18',
+                                  fontWeight: 'bold'
                                 }
-                              }).render();
-                            });
-                          </script>
-
-                    </div>
-                </div>
-                <!-- End Week element -->
-
-                <!-- Start Month element -->
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Month</h5>
-
-                        <div id="monthChart" style="min-height: 400px;" class="echart"></div>
-
-
-                        <script>
-                            document.addEventListener("DOMContentLoaded", () => {
-                              new ApexCharts(document.querySelector("#monthChart"), {
-                                series: [{
-                                  name: 'Sales',
-                                  data: [31, 40, 28, 51, 42, 82, "56"],
-                                }, {
-                                  name: 'Revenue',
-                                  data: [11, 32, 45, 32, 34, 52, 41]
-                                }, {
-                                  name: 'Customers',
-                                  data: [15, 11, 32, 18, 9, 24, 11]
-                                }],
-                                chart: {
-                                  height: 350,
-                                  type: 'area',
-                                  toolbar: {
-                                    show: false
-                                  },
+                              },
+                              labelLine: {
+                                show: false
+                              },
+                              data: [{
+                                  value: 1048,
+                                  name: '직장인 추정'
                                 },
-                                markers: {
-                                  size: 4
+                                {
+                                  value: 735,
+                                  name: '편의점 추정'
                                 },
-                                colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                                fill: {
-                                  type: "gradient",
-                                  gradient: {
-                                    shadeIntensity: 1,
-                                    opacityFrom: 0.3,
-                                    opacityTo: 0.4,
-                                    stops: [0, 90, 100]
-                                  }
+                                {
+                                  value: 580,
+                                  name: '커피숍 추정'
                                 },
-                                dataLabels: {
-                                  enabled: false
+                                {
+                                  value: 484,
+                                  name: '기타'
                                 },
-                                stroke: {
-                                  curve: 'smooth',
-                                  width: 2
-                                },
-                                xaxis: {
-                                  type: 'datetime',
-                                  categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
-                                },
-                                tooltip: {
-                                  x: {
-                                    format: 'dd/MM/yy HH:mm'
-                                  },
+                                {
+                                  value: 300,
+                                  name: '방문하지 않고 지나침'
                                 }
-                              }).render();
-                            });
-                          </script>
+                              ]
+                            }]
+                          });
+                        });
+                      </script>
 
                     </div>
+
+
+                  </div><!-- End Website TodayTraffic -->
                 </div>
-                <!-- End Month element -->
-
-                <!-- Start Year element -->
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Year</h5>
-
-                        <div id="yearChart" style="min-height: 400px;" class="echart"></div>
-
-
-                        <script>
-                            document.addEventListener("DOMContentLoaded", () => {
-                              new ApexCharts(document.querySelector("#yearChart"), {
-                                series: [{
-                                  name: 'Sales',
-                                  data: [31, 40, 28, 51, 42, 82, "56"],
-                                }, {
-                                  name: 'Revenue',
-                                  data: [11, 32, 45, 32, 34, 52, 41]
-                                }, {
-                                  name: 'Customers',
-                                  data: [15, 11, 32, 18, 9, 24, 11]
-                                }],
-                                chart: {
-                                  height: 350,
-                                  type: 'area',
-                                  toolbar: {
-                                    show: false
-                                  },
-                                },
-                                markers: {
-                                  size: 4
-                                },
-                                colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                                fill: {
-                                  type: "gradient",
-                                  gradient: {
-                                    shadeIntensity: 1,
-                                    opacityFrom: 0.3,
-                                    opacityTo: 0.4,
-                                    stops: [0, 90, 100]
-                                  }
-                                },
-                                dataLabels: {
-                                  enabled: false
-                                },
-                                stroke: {
-                                  curve: 'smooth',
-                                  width: 2
-                                },
-                                xaxis: {
-                                  type: 'datetime',
-                                  categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
-                                },
-                                tooltip: {
-                                  x: {
-                                    format: 'dd/MM/yy HH:mm'
-                                  },
-                                }
-                              }).render();
-                            });
-                          </script>
-
-                    </div>
-                </div>
-                <!-- End Year element -->
-
             </div>
-            <!-- End Row -->
-        </div>
-    </div>
+        </section>
+
+
       <!-- End Left side columns -->
   </main>
 

@@ -317,16 +317,16 @@ def analysis(request):
         current_year = today.year
         current_month = today.month
         current_day = today.day
-        standard_time = time(0,0,0)
+        standard_time = time(0, 0, 0)
         time_list = []
         time_list2 = []
         check_point = Record.objects.filter(count_date__year=current_year, count_date__month=current_month,
                                             count_date__day=current_day).count()
         if check_point < 4:
             all_count = TodayTraffic.objects.filter(date=today.date()).count()
-            for i in range(0,23,1):
+            for i in range(0, 23, 1):
                 time_list.insert(i, (TodayTraffic.objects.filter(date=today.date(), time__gte=standard_time) & TodayTraffic.objects.filter(date=today.date(), time__lte=standard_time.replace(hour=i + 1))).count())
-                standard_time = standard_time.replace(hour = i+1)
+                standard_time = standard_time.replace(hour=i+1)
             time_list.insert(23, (TodayTraffic.objects.filter(date=today.date(), time__gte='23:00:00') & TodayTraffic.objects.filter(date=today.date(), time__lte='00:00:00')).count())
             Record.objects.create(all_count=all_count,
                                   time_1=time_list[0], time_2=time_list[1], time_3=time_list[2], time_4=time_list[3],
@@ -339,7 +339,7 @@ def analysis(request):
             return redirect('analysis')
         else:
             record_list = Record.objects.all()
-            return render(request,'analysis.html',{"record_list" : record_list, 'error_message':"Error",})
+            return render(request, 'analysis.html', {"record_list": record_list, 'error_message': "Error", })
     else:
         record_list = Record.objects.all()
         record_list = [record.get_values() for record in record_list]
