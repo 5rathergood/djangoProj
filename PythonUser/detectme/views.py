@@ -296,16 +296,45 @@ def db_list(request):
 
 
 def statistics(request):
-    today = datetime.today()
-    month = int(today.strftime('%m'))
-
+    #일별 그래프
     record_day_list = Record.objects.all()
-    record_month_list = Record.objects.all().filter(count_date__month='05')
-
     record_day_list = [record.get_count_and_month() for record in record_day_list]
-    record_month_list = [record.get_count_and_month() for record in record_month_list]
 
-    return render(request, 'statistics.html', {"record_day_list": record_day_list[-5:], "record_month_list": record_month_list})
+    #월별 그래프
+    record_month_list = [{'all_count': 0, 'month': '0'} for _ in range(0, 12)]
+
+    record_month_db_list = [
+        Record.objects.all().filter(count_date__month='01'),
+        Record.objects.all().filter(count_date__month='02'),
+        Record.objects.all().filter(count_date__month='03'),
+        Record.objects.all().filter(count_date__month='04'),
+        Record.objects.all().filter(count_date__month='05'),
+        Record.objects.all().filter(count_date__month='06'),
+        Record.objects.all().filter(count_date__month='07'),
+        Record.objects.all().filter(count_date__month='08'),
+        Record.objects.all().filter(count_date__month='09'),
+        Record.objects.all().filter(count_date__month='10'),
+        Record.objects.all().filter(count_date__month='11'),
+        Record.objects.all().filter(count_date__month='12'),
+    ]
+    
+    #record_month_db_list의 원소들로 부터 월별 count를 계산
+    for cur_month in range(0, 12):
+        cur_month_db_list = record_month_db_list[cur_month]
+
+        total_count = 0
+        for day_db in cur_month_db_list:
+            total_count += day_db.get_count_and_month()['all_count']
+        record_month_list[cur_month]['all_count'] = total_count
+        record_month_list[cur_month]['month'] = str(cur_month + 1)
+
+    #return 오브젝트
+    return_object = {
+        "record_day_list": record_day_list[-5:],
+        "record_month_list": record_month_list
+    }
+
+    return render(request, 'statistics.html', return_object)
 
 
 def summary(request):
