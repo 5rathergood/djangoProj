@@ -21,55 +21,75 @@
                                 </div>
 
                                 <script>
-                                document.addEventListener("DOMContentLoaded", () => {
-                                  new ApexCharts(document.querySelector("#dayChart"), {
-                                    series: [{
-                                      name: 'Sales',
-                                      data: [31, 40, 28, 51, 42, 82, "56"],
-                                    }, {
-                                      name: 'Revenue',
-                                      data: [11, 32, 45, 32, 34, 52, 41]
-                                    }, {
-                                      name: 'Customers',
-                                      data: [15, 11, 32, 18, 9, 24, 11]
-                                    }],
-                                    chart: {
-                                      height: 350,
-                                      type: 'area',
-                                      toolbar: {
-                                        show: false
+                                jQuery(document).ready(function () {
+                                  var record_day_list = "{{record_day_list}}".replace(/&#x27;/g, "\"");
+                                  const json_record_day_list = JSON.parse(record_day_list);
+
+                                  console.log(json_record_day_list);
+
+                                  var graph_categories = [];
+                                  var graph_data = [];
+
+                                  for (var obj of json_record_day_list) {
+                                    graph_categories.push(obj["month"] + '-' + obj["day"]);
+                                    graph_data.push(obj["all_count"]);
+                                  }
+
+                                  const apexChart = "#dayChart";
+
+                                  var options = {
+                                      series: [{
+                                        name: 'Sales',
+                                        data: graph_data,
                                       },
-                                    },
-                                    markers: {
-                                      size: 4
-                                    },
-                                    colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                                    fill: {
-                                      type: "gradient",
-                                      gradient: {
-                                        shadeIntensity: 1,
-                                        opacityFrom: 0.3,
-                                        opacityTo: 0.4,
-                                        stops: [0, 90, 100]
+                                      /*{
+                                        name: 'Revenue',
+                                        data: [11, 32, 45, 32, 34, 52, 41, 10]
+                                      }, {
+                                        name: 'Customers',
+                                        data: [15, 11, 32, 18, 9, 24, 11]
+                                      }*/
+                                      ],
+                                      chart: {
+                                        height: 350,
+                                        type: 'area',
+                                        toolbar: {
+                                          show: false
+                                        },
+                                      },
+                                      markers: {
+                                        size: 4
+                                      },
+                                      colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                                      fill: {
+                                        type: "gradient",
+                                        gradient: {
+                                          shadeIntensity: 1,
+                                          opacityFrom: 0.3,
+                                          opacityTo: 0.4,
+                                          stops: [0, 90, 100]
+                                        }
+                                      },
+                                      dataLabels: {
+                                        enabled: false
+                                      },
+                                      stroke: {
+                                        curve: 'smooth',
+                                        width: 2
+                                      },
+                                      xaxis: {
+                                        type: 'date',
+                                        categories: graph_categories,
+                                      },
+                                      tooltip: {
+                                        x: {
+                                          format: 'MM/dd'
+                                        },
                                       }
-                                    },
-                                    dataLabels: {
-                                      enabled: false
-                                    },
-                                    stroke: {
-                                      curve: 'smooth',
-                                      width: 2
-                                    },
-                                    xaxis: {
-                                      type: 'datetime',
-                                      categories: ["2018-09-19T00:30:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
-                                    },
-                                    tooltip: {
-                                      x: {
-                                        format: 'dd/MM/yy HH:mm'
-                                      },
-                                    }
-                                  }).render();
+                                  };
+
+                                  var chart = new ApexCharts(document.querySelector(apexChart), options);
+                                  chart.render();
                                 });
 
                                 </script>

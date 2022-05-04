@@ -36,6 +36,9 @@ class TodayTraffic(models.Model):
     def get_person_id(self):
         return {'person_id': self.person_id}
 
+    def get_month(self):
+        return self.date.strftime("%m")
+
 
 #오늘 기록
 class TodayRecord(models.Model):
@@ -104,7 +107,7 @@ class Record(models.Model):
     time_22 = models.IntegerField(null=True, default=0)  # 21~22
     time_23 = models.IntegerField(null=True, default=0)  # 22~23
     time_24 = models.IntegerField(null=True, default=0)  # 23~24
-    count_date = models.DateTimeField(default=timezone.now())
+    count_date = models.DateTimeField(null=True, default=timezone.now())
 
     def get_values(self):
         return {'all_count': self.all_count,
@@ -114,5 +117,11 @@ class Record(models.Model):
                 'time_13': self.time_13, 'time_14': self.time_14, 'time_15': self.time_15, 'time_16' : self.time_16,
                 'time_17': self.time_17, 'time_18': self.time_18, 'time_19': self.time_19, 'time_20' : self.time_20,
                 'time_21': self.time_21, 'time_22': self.time_22, 'time_23': self.time_23, 'time_24' : self.time_24}
+
+    def get_count_and_month(self):
+        return {'all_count': self.all_count, 'month': self.count_date.strftime("%m"),
+                'day': self.count_date.strftime("%d")}
+
+
     #def __str__(self):
      #   return self.click_date

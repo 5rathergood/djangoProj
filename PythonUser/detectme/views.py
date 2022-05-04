@@ -196,8 +196,6 @@ class VideoCamera(object):
                     else:
                         print("this is hour ", today_hour)
                         target_row = TodayRecord.objects.first()
-                        #target_row.time_15 += 1
-                        #print(target_row.__dict__)
                         target_row.__dict__[index] += 1
                         target_row.save()
 
@@ -256,33 +254,34 @@ from .models import TodayTraffic, TodayRecord, Record
 
 
 def home(request):
-    if request.method == 'POST':
-        p_id = request.POST["p_id_text"]
-        today = datetime.today()
-        today_date = today.date()
-        today_time = today.strftime('%H:%M:%S')
-        try:
-            TodayTraffic.objects.create(person_id=p_id, date=today_date, time=today_time)
-        except IntegrityError:
-            pass
-        return redirect('home')
-    else:
-        #최초 실행시 today_record_list가 비어있다면 default row를 하나 생성
-        today_record_list = TodayRecord.objects.all()
-        if len(today_record_list) == 0:
-            first_low = TodayRecord.objects.create()
-            first_low.save()
+    # if request.method == 'POST':
+    #     p_id = request.POST["p_id_text"]
+    #     today = datetime.today()
+    #     today_date = today.date()
+    #     today_time = today.strftime('%H:%M:%S')
+    #     try:
+    #         TodayTraffic.objects.create(person_id=p_id, date=today_date, time=today_time)
+    #     except IntegrityError:
+    #         pass
+    #     return redirect('home')
+    # else:
 
-        #TodayTraffic.objects.bulk_update()
-        traffic_list = TodayTraffic.objects.all()
+    #최초 실행시 today_record_list가 비어있다면 default row를 하나 생성
+    today_record_list = TodayRecord.objects.all()
+    if len(today_record_list) == 0:
+        first_low = TodayRecord.objects.create()
+        first_low.save()
 
-        traffic_list = [traffic.get_person_id() for traffic in traffic_list]
-        #record_list = Record.objects.all()
-        #record_list = [record.get_values() for record in record_list]
-        today_record_list = [today_record.get_values() for today_record in today_record_list]
-        print(today_record_list)
+    #TodayTraffic.objects.bulk_update()
+    traffic_list = TodayTraffic.objects.all()
 
-        return render(request, "home.html", {"traffic_list": traffic_list, "today_record_list": today_record_list})
+    traffic_list = [traffic.get_person_id() for traffic in traffic_list]
+    #record_list = Record.objects.all()
+    #record_list = [record.get_values() for record in record_list]
+    today_record_list = [today_record.get_values() for today_record in today_record_list]
+    print(today_record_list)
+
+    return render(request, "home.html", {"traffic_list": traffic_list, "today_record_list": today_record_list})
 
 
 def db_list(request):
@@ -291,20 +290,22 @@ def db_list(request):
         first_low = TodayRecord.objects.create()
         first_low.save()
 
-    # TodayTraffic.objects.bulk_update()
-    traffic_list = TodayTraffic.objects.all()
-
-    traffic_list = [traffic.get_person_id() for traffic in traffic_list]
-    # record_list = Record.objects.all()
-    # record_list = [record.get_values() for record in record_list]
     today_record_list = [today_record.get_values() for today_record in today_record_list]
 
     return JsonResponse(today_record_list[0])
 
 
 def statistics(request):
-    traffic_list = TodayTraffic.objects.all()
-    return render(request, 'statistics.html', {"traffic_list": traffic_list})
+    today = datetime.today()
+    month = int(today.strftime('%m'))
+
+    record_day_list = Record.objects.all()
+    record_month_list = Record.objects.all().filter(count_date__month='05')
+
+    record_day_list = [record.get_count_and_month() for record in record_day_list]
+    record_month_list = [record.get_count_and_month() for record in record_month_list]
+
+    return render(request, 'statistics.html', {"record_day_list": record_day_list[-5:], "record_month_list": record_month_list})
 
 
 def summary(request):
