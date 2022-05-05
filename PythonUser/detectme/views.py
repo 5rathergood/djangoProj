@@ -1,7 +1,10 @@
 from datetime import date, time, datetime
+
+
 from django.shortcuts import render, redirect
+from django.views import View
 from django.views.decorators import gzip
-from django.http import StreamingHttpResponse, JsonResponse
+from django.http import StreamingHttpResponse, JsonResponse, HttpRequest
 from django.db import IntegrityError
 import cv2
 import threading
@@ -341,36 +344,66 @@ def summary(request):
     return render(request, 'summary.html')
 
 
-def analysis(request):
-    if request.method == "POST":
-        today = datetime.today()
-        current_year = today.year
-        current_month = today.month
-        current_day = today.day
-        standard_time = time(0, 0, 0)
-        time_list = []
-        time_list2 = []
-        check_point = Record.objects.filter(count_date__year=current_year, count_date__month=current_month,
-                                            count_date__day=current_day).count()
-        if check_point < 4:
-            all_count = TodayTraffic.objects.filter(date=today.date()).count()
-            for i in range(0, 23, 1):
-                time_list.insert(i, (TodayTraffic.objects.filter(date=today.date(), time__gte=standard_time) & TodayTraffic.objects.filter(date=today.date(), time__lte=standard_time.replace(hour=i + 1))).count())
-                standard_time = standard_time.replace(hour=i+1)
-            time_list.insert(23, (TodayTraffic.objects.filter(date=today.date(), time__gte='23:00:00') & TodayTraffic.objects.filter(date=today.date(), time__lte='00:00:00')).count())
-            Record.objects.create(all_count=all_count,
-                                  time_1=time_list[0], time_2=time_list[1], time_3=time_list[2], time_4=time_list[3],
-                                  time_5=time_list[4], time_6=time_list[5], time_7=time_list[6], time_8=time_list[7],
-                                  time_9=time_list[8], time_10=time_list[9], time_11=time_list[10], time_12=time_list[11],
-                                  time_13=time_list[12], time_14=time_list[13], time_15=time_list[14], time_16=time_list[15],
-                                  time_17=time_list[16], time_18=time_list[17], time_19=time_list[18], time_20=time_list[19],
-                                  time_21=time_list[20], time_22=time_list[21], time_23=time_list[22], time_24=time_list[23],)
-            TodayTraffic.objects.all().delete()
-            return redirect('analysis')
-        else:
-            record_list = Record.objects.all()
-            return render(request, 'analysis.html', {"record_list": record_list, 'error_message': "Error", })
-    else:
-        record_list = Record.objects.all()
-        record_list = [record.get_values() for record in record_list]
-        return render(request, 'analysis.html', {"record_list": record_list})
+# def analysis(request):
+#     if request.method == "POST":
+#         today = datetime.today()
+#         current_year = today.year
+#         current_month = today.month
+#         current_day = today.day
+#         standard_time = time(0, 0, 0)
+#         time_list = []
+#         time_list2 = []
+#         check_point = Record.objects.filter(count_date__year=current_year, count_date__month=current_month,
+#                                             count_date__day=current_day).count()
+#         if check_point < 4:
+#             all_count = TodayTraffic.objects.filter(date=today.date()).count()
+#             for i in range(0, 23, 1):
+#                 time_list.insert(i, (TodayTraffic.objects.filter(date=today.date(), time__gte=standard_time) & TodayTraffic.objects.filter(date=today.date(), time__lte=standard_time.replace(hour=i + 1))).count())
+#                 standard_time = standard_time.replace(hour=i+1)
+#             time_list.insert(23, (TodayTraffic.objects.filter(date=today.date(), time__gte='23:00:00') & TodayTraffic.objects.filter(date=today.date(), time__lte='00:00:00')).count())
+#             Record.objects.create(all_count=all_count,
+#                                   time_1=time_list[0], time_2=time_list[1], time_3=time_list[2], time_4=time_list[3],
+#                                   time_5=time_list[4], time_6=time_list[5], time_7=time_list[6], time_8=time_list[7],
+#                                   time_9=time_list[8], time_10=time_list[9], time_11=time_list[10], time_12=time_list[11],
+#                                   time_13=time_list[12], time_14=time_list[13], time_15=time_list[14], time_16=time_list[15],
+#                                   time_17=time_list[16], time_18=time_list[17], time_19=time_list[18], time_20=time_list[19],
+#                                   time_21=time_list[20], time_22=time_list[21], time_23=time_list[22], time_24=time_list[23],)
+#             TodayTraffic.objects.all().delete()
+#             return redirect('analysis')
+#         else:
+#             record_list = Record.objects.all()
+#             return render(request, 'analysis.html', {"record_list": record_list, 'error_message': "Error", })
+#     else:
+#         record_list = Record.objects.all()
+#         record_list = [record.get_values() for record in record_list]
+#         return render(request, 'analysis.html', {"record_list": record_list})
+
+class AnalysisCreateView(View):
+    '''
+    2022.05.05
+    박병제
+    분석 생성 만듬.
+    문제 1.유동인구 db연결
+        2.도로명 주소를 통해 찾기
+    '''
+    def get(self, request : HttpRequest, *args, **kwargs):
+        context = {}
+        context['attraction'] = "지역의 범위를 입력하시요."
+        return render(request,'analysis.html',context)
+    def post(self, request : HttpRequest, *args, **kwargs):
+        context = {}
+
+        area = int(request.POST['area'])
+        population = 10 # 유동인구
+        total_attraction = 2.9917 #상수 값임 get_cur_shop_attraction() 함수를 사용할 때 쓰여야함
+        distance = 100 #거리값은 변경되어야함 수동으로 입력
+        #calc_attraction
+        calc_attraction = area/(pow(distance, 2))
+
+        #get_cur_shop_attraction
+        get_cur_shop_attraction = calc_attraction/(calc_attraction + total_attraction)
+        attraction = get_cur_shop_attraction * population
+        context['attraction'] = attraction
+        return render(request, 'analysis.html',context)
+
+
