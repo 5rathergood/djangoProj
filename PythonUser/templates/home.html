@@ -56,13 +56,51 @@
             </div><!-- End Sales Card -->
 
             <!-- db insert test with post method -->
-<!--            <div>-->
-<!--              <form method="post">-->
-<!--                {% csrf_token %}-->
-<!--                <input type="text" name="p_id_text">-->
-<!--                <button type="submit" class="btn btn-primary">person_id 입력</button>-->
-<!--              </form>-->
-<!--            </div>-->
+            <div>
+                <button id = "1" type="submit" class="btn btn-primary">Detectme_TodayTraffic 초기화</button>
+            </div>
+            <script>
+              jQuery(document).ready(function () {
+                $('#1').click(function(){
+                      //alert("refresh");
+
+                      $.ajax({
+                          url: "InitTodayTraffic",
+                          type: 'GET',
+                          async: true,
+                          cache: false,
+
+                          success: function (response) {
+                              //closeLoadingDialog('#container');
+                              console.log(JSON.stringify(response));
+                          }
+                      });
+                  });
+              });
+            </script>
+
+            <div>
+                <button id = "2" type="submit" class="btn btn-primary">Detectme_TodayRecord 초기화</button>
+            </div>
+            <script>
+              jQuery(document).ready(function () {
+                $('#2').click(function(){
+                      //alert("refresh");
+
+                      $.ajax({
+                          url: "InitTodayRecord",
+                          type: 'GET',
+                          async: true,
+                          cache: false,
+
+                          success: function (response) {
+                              //closeLoadingDialog('#container');
+                              console.log(JSON.stringify(response));
+                          }
+                      });
+                  });
+              });
+            </script>
             <!-- End db insert test with post method -->
 
 
