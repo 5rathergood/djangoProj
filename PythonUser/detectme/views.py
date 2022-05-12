@@ -233,54 +233,18 @@ def detectme(request):
 # using DB part
 from .models import TodayTraffic, TodayRecord, Record
 
-# def db_list(request):
-#     if request.method == 'POST':
-#         traffic_db = TodayTraffic
-#         traffic_db.insertData(traffic_db, request.POST["p_id_text"])
-#         return redirect('db_list')
-#     else:
-#         traffic_list = TodayTraffic.objects.all()
-#         return render(request, "home.html", {"traffic_list": traffic_list})
-#
-#
-# def home(request):
-#     return render(request, 'home.html')
-#
-#
-# def statistics(request):
-#     traffic_list = TodayTraffic.objects.all()
-#     return render(request, 'statistics.html', {"traffic_list": traffic_list})
-#
-#
-# def analysis(request):
-#     return render(request, 'analysis.html')
 
 
 def home(request):
-    # if request.method == 'POST':
-    #     p_id = request.POST["p_id_text"]
-    #     today = datetime.today()
-    #     today_date = today.date()
-    #     today_time = today.strftime('%H:%M:%S')
-    #     try:
-    #         TodayTraffic.objects.create(person_id=p_id, date=today_date, time=today_time)
-    #     except IntegrityError:
-    #         pass
-    #     return redirect('home')
-    # else:
-
     #최초 실행시 today_record_list가 비어있다면 default row를 하나 생성
     today_record_list = TodayRecord.objects.all()
     if len(today_record_list) == 0:
         first_low = TodayRecord.objects.create()
         first_low.save()
 
-    #TodayTraffic.objects.bulk_update()
     traffic_list = TodayTraffic.objects.all()
 
     traffic_list = [traffic.get_person_id() for traffic in traffic_list]
-    #record_list = Record.objects.all()
-    #record_list = [record.get_values() for record in record_list]
     today_record_list = [today_record.get_values() for today_record in today_record_list]
     print(today_record_list)
 
@@ -338,6 +302,28 @@ def statistics(request):
     }
 
     return render(request, 'statistics.html', return_object)
+
+
+def InitTodayTraffic(request):
+    TodayTraffic.objects.all().delete()
+
+    data = {
+        "state": "success"
+    }
+    return JsonResponse(data)
+
+
+def InitTodayRecord(request):
+    TodayRecord.objects.all().delete()
+    first_low = TodayRecord.objects.create()
+    first_low.save()
+
+    data = {
+        "state": "success"
+    }
+
+    return JsonResponse(data)
+
 
 
 def summary(request):
