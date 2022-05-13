@@ -48,6 +48,7 @@ if str(DSDIR) not in sys.path:
 from PythonUser.static.ds.deep_sort.utils.parser import get_config
 from PythonUser.static.ds.deep_sort.deep_sort import DeepSort
 
+import cap
 
 # Create your views here.
 
@@ -133,6 +134,21 @@ class VideoCamera(object):
         classes = 0
         agnostic_nms = False
         max_det = 1000
+
+        obj_num = []
+        obj_tail = []
+        
+        lines = []
+        line_check = True
+        
+        # line management, run once
+        if line_check:
+            #print(len(im0s[0]))
+            cap.line_manage(self.frame, lines)
+            print(lines)
+            #print(type(im0s))
+            check = False
+        
         while True:
             (self.grabbed, self.frame) = self.video.read()
 
@@ -160,6 +176,7 @@ class VideoCamera(object):
             det = pred[0]
 
             # print(img.shape)
+            cap.draw_lines(self.frame, lines)
 
             if len(det):
                 # tracker
@@ -171,6 +188,12 @@ class VideoCamera(object):
                 for j, (output, conf) in enumerate(zip(outputs, confs)):
                     bboxes = output[0:4]
                     id = output[4]
+                    
+                    #object list
+                    if id not in obj_num:
+                        obj_num.append(id)
+                        obj_tail.insert(obj_num.index(id), [])
+                        
                     bboxes[2] = output[2] - output[0]
                     bboxes[3] = output[3] - output[1]
 
@@ -184,6 +207,25 @@ class VideoCamera(object):
                     cv2.line(self.frame, point, point, (255, 255, 255), 5)
                     cv2.putText(self.frame, str(id), (bboxes[0], bboxes[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0),
                                 1)
+
+                    #object tail track
+                    obj_tail[obj_num.index(id)].append(point)
+                    if len(obj_tail[obj_num.index(id)]) > 30:
+                        del obj_tail[obj_num.index(id)][0]
+
+                    for i in range(len(obj_tail[obj_num.index(id)]) - 1):
+                        tail_point1 = obj_tail[obj_num.index(id)][i]
+                        tail_point2 = obj_tail[obj_num.index(id)][i+1]
+                        cv2.line(self.frame, tail_point1, tail_point2, (0, 0, 255), 2)
+
+                    #line counting
+                    cap.check_cross(id, obj_tail[obj_num.index(id)], lines)
+                    """
+                    for i, on_mouse, line, to_left, to_right in lines:
+                        i           #line_number
+                        to_left     #left_counting
+                        to_right    #right_counting
+                    """
 
                     #insert to DB
                     p_id = id
@@ -210,6 +252,7 @@ class VideoCamera(object):
             #            point = (350, 175)
             #            cv2.rectangle(self.frame, bbox, (0, 255, 0), 1)
             #            cv2.line(self.frame, point, point, (255, 255, 255), 5)
+            cap.line_count(self.frame, lines)
             cv2.waitKey(self.delay)
 
 
