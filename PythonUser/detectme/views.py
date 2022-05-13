@@ -374,7 +374,7 @@ class AnalysisCreateView(View):
     '''
     def get(self, request : HttpRequest, *args, **kwargs):
         context = {}
-        context['attraction'] = "지역의 범위를 입력하시요."
+        context['attraction'] = "먼저 면적을 입력하세요"
         return render(request,'analysis.html',context)
     def post(self, request : HttpRequest, *args, **kwargs):
         context = {}
@@ -389,7 +389,7 @@ class AnalysisCreateView(View):
         #get_cur_shop_attraction
         get_cur_shop_attraction = calc_attraction/(calc_attraction + total_attraction)
         attraction = get_cur_shop_attraction * population
-        context['attraction'] = attraction
+        context['attraction'] = str(round(attraction * 100, 3)) + "%"
         return render(request, 'analysis.html',context)
 
 
