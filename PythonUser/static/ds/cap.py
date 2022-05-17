@@ -103,7 +103,51 @@ def line_count(img, lines):
         
         cv2.putText(img, text1, (letter1_x, letter1_y), font, 1, (255, 255, 255), 2)
         cv2.putText(img, text2, (letter2_x, letter2_y), font, 1, (255, 255, 255), 2)
-    
+
+def line_numbering(img, lines):
+    for i, on_mouse, line, to_left, to_right in lines:
+        if line[1][1] - line[0][1] == 0:
+            radian = math.radians(0)
+        elif line[1][0] - line[0][0] == 0:
+            radian = math.radians(90)
+        else:
+            degree = (line[1][1] - line[0][1]) / (line[1][0] - line[0][0])
+            #degree = -1 / degree
+            radian = math.atan(degree)
+
+        if line[1][0] < line[0][0]:
+            direction = -1
+        else:
+            direction = 1
+        
+        #print(radian)
+        
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        
+        text1 = str(i)
+        size, baseline = cv2.getTextSize(text1, font, 1, 1)
+        letter1_x = int(line[0][0] - 30 * math.cos(radian) * direction - size[0]/2)
+        letter1_y = int(line[0][1] - 30 * math.sin(radian) * direction + size[1]/2)
+        
+        cv2.putText(img, text1, (letter1_x, letter1_y), font, 1, (255, 255, 255), 2)
+
+def save_lines(lines):
+    f = open('static/ds/lines.txt', 'w')
+    for i, on_mouse, line, to_left, to_right in lines:
+        data = str(i) + " " + str(line[0][0]) + " " + str(line[0][1]) + " " + str(line[1][0]) + " " + str(line[1][1]) + "\n"
+        f.write(data)
+    f.close()
+
+def load_lines(lines):
+    f = open('static/ds/lines.txt', 'r')
+    while True:
+        data = list(map(int, f.readline().split()))
+        if not data:
+            break
+        line = [data[0], False, [[data[1],data[2]], [data[3],data[4]]], [], []]
+        lines.append(line)
+    f.close()
+
 def line_manage(im0, lines):
 
     win_name = "Line_Manage"
@@ -114,12 +158,14 @@ def line_manage(im0, lines):
     while key != 113:
         img = im0.copy()
         draw_lines(img, lines)
+        line_numbering(img, lines)
         cv2.imshow(win_name, img)
         key = cv2.waitKey(10)
 
     for i in range(len(lines)):
         lines[i][1] = False
     cv2.destroyAllWindows()
+    save_lines(lines)
 
 def check_cross(obj_num, tails, lines):
     if len(tails) > 0:

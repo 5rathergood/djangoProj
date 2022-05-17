@@ -6,8 +6,8 @@ from django.views import View
 from django.views.decorators import gzip
 from django.http import StreamingHttpResponse, JsonResponse, HttpRequest
 from django.db import IntegrityError
-import cv2
 import threading
+import cv2
 
 import argparse
 import os
@@ -48,78 +48,40 @@ if str(DSDIR) not in sys.path:
 from PythonUser.static.ds.deep_sort.utils.parser import get_config
 from PythonUser.static.ds.deep_sort.deep_sort import DeepSort
 
-import cap
+import queue
+import ObjectTrack as OT
+import time
 
 # Create your views here.
 
+ot_q = queue.Queue()
+OT_thread = threading.Thread(target=OT.ObjectTrack,args=(ot_q,))
+OT_thread.start()
+
+Cam_Alive = False
+
 class VideoCamera(object):
     def __init__(self):
-        weights = "static/ds/yolov5/yolov5s.pt"
-        source = "static/OTtest.mp4"
-        data = "static/ds/yolov5/data/coco128.yaml"
-        self.imgsz = [640, 640]
-        self.device = ''
-        line_thickness = 3
-        self.half = False
-        dnn = False
+        self.frame = cv2.imread('static/ds/prepare.jpg')
+        global Cam_Alive
+        #print('init: ', Cam_Alive)
+        
+        #이전에 카메라 객체를 생성한 경우
+        if Cam_Alive:
+            Cam_Alive = False
+            
+            #기존 쓰레드가 종료될 때까지 1초 기다림
+            time.sleep(1)
+        #print('working')
 
-        source = str(source)
-        cap = cv2.VideoCapture(source)
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        self.delay = int(1000 / fps)
-        obj_det = True
-        det_count = 0
-
-        detnum = 0
-
-        tracker = []
-
-        config_deepsort = 'static/ds/deep_sort/configs/deep_sort.yaml'
-        deep_sort_model = 'osnet_x0_25'
-
-        # w = round(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        # h = round(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        # frame_size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-        # fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-        # out = cv2.VideoWriter('output.mp4', fourcc, fps, (w, h))
-
-        # initialize deepsort
-        cfg = get_config()
-        cfg.merge_from_file(config_deepsort)
-        self.deepsort = DeepSort(deep_sort_model,
-                                 max_dist=cfg.DEEPSORT.MAX_DIST,
-                                 max_iou_distance=cfg.DEEPSORT.MAX_IOU_DISTANCE,
-                                 max_age=cfg.DEEPSORT.MAX_AGE, n_init=cfg.DEEPSORT.N_INIT,
-                                 nn_budget=cfg.DEEPSORT.NN_BUDGET,
-                                 use_cuda=True)
-
-        # Load model
-        self.device = select_device(self.device)
-        print(weights)
-        print(self.device)
-        print(dnn)
-        print(data)
-        print(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        print(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        self.model = DetectMultiBackend(weights, self.device, dnn)
-        # print('check')
-        self.stride, names, pt, jit, onnx, engine = self.model.stride, self.model.names, self.model.pt, self.model.jit, self.model.onnx, self.model.engine
-        # print('check')
-        self.imgsz = check_img_size(self.imgsz, s=self.stride)  # check image size
-
-        # Half
-        self.half &= (
-                             pt or jit or onnx or engine) and self.device.type != 'cpu'  # FP16 supported on limited backends with CUDA
-        if pt or jit:
-            self.model.model.half() if self.half else self.model.model.float()
-
-        # print('check')
-        self.video = cv2.VideoCapture(source)
-        (self.grabbed, self.frame) = self.video.read()
-        threading.Thread(target=self.update, args=()).start()
+        Cam_Alive = True
+        self.update_thread = threading.Thread(target=self.update, args=())
+        self.update_thread.start()
+        #if not OT_thread.is_alive():
+        #    OT_thread.start()
 
     def __del__(self):
-        self.video.release()
+        print('cam delete')
 
     def get_frame(self):
         image = self.frame
@@ -127,133 +89,11 @@ class VideoCamera(object):
         return jpeg.tobytes()
 
     def update(self):
-        conf_thres = 0.5
-        iou_thres = 0.45
-        augment = False
-        visualize = False
-        classes = 0
-        agnostic_nms = False
-        max_det = 1000
-
-        obj_num = []
-        obj_tail = []
-        
-        lines = []
-        line_check = True
-        
-        # line management, run once
-        if line_check:
-            #print(len(im0s[0]))
-            cap.line_manage(self.frame, lines)
-            print(lines)
-            #print(type(im0s))
-            check = False
-        
-        while True:
-            (self.grabbed, self.frame) = self.video.read()
-
-            #####################################################################################################
-            # Padded resize
-            img = letterbox(self.frame, self.imgsz, stride=self.stride)[0]
-
-            # Convert
-            img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
-            img = np.ascontiguousarray(img)
-
-            img = torch.from_numpy(img).to(self.device)
-            img = img.half() if self.half else img.float()  # uint8 to fp16/32
-            img /= 255.0  # 0 - 255 to 0.0 - 1.0
-            if img.ndimension() == 3:
-                img = img.unsqueeze(0)
-
-            # Inference
-            pred = self.model(img, augment=augment, visualize=visualize)
-
-            # Apply NMS
-            pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)
-
-            # Process detections
-            det = pred[0]
-
-            # print(img.shape)
-            cap.draw_lines(self.frame, lines)
-
-            if len(det):
-                # tracker
-                xywhs = xyxy2xywh(det[:, 0:4])
-                confs = det[:, 4]
-                clss = det[:, 5]
-                outputs = self.deepsort.update(xywhs.cpu(), confs.cpu(), clss.cpu(), self.frame)
-                # print()
-                for j, (output, conf) in enumerate(zip(outputs, confs)):
-                    bboxes = output[0:4]
-                    id = output[4]
-                    
-                    #object list
-                    if id not in obj_num:
-                        obj_num.append(id)
-                        obj_tail.insert(obj_num.index(id), [])
-                        
-                    bboxes[2] = output[2] - output[0]
-                    bboxes[3] = output[3] - output[1]
-
-                    bboxes[0] = 2 * bboxes[0]
-                    bboxes[1] = 2 * bboxes[1] - 20
-                    bboxes[2] = 2 * bboxes[2]
-                    bboxes[3] = 2 * bboxes[3]
-
-                    point = (int(bboxes[0] + bboxes[2] / 2), int(bboxes[1] + bboxes[3] / 2))
-                    cv2.rectangle(self.frame, bboxes, (0, 255, 0), 1)
-                    cv2.line(self.frame, point, point, (255, 255, 255), 5)
-                    cv2.putText(self.frame, str(id), (bboxes[0], bboxes[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0),
-                                1)
-
-                    #object tail track
-                    obj_tail[obj_num.index(id)].append(point)
-                    if len(obj_tail[obj_num.index(id)]) > 30:
-                        del obj_tail[obj_num.index(id)][0]
-
-                    for i in range(len(obj_tail[obj_num.index(id)]) - 1):
-                        tail_point1 = obj_tail[obj_num.index(id)][i]
-                        tail_point2 = obj_tail[obj_num.index(id)][i+1]
-                        cv2.line(self.frame, tail_point1, tail_point2, (0, 0, 255), 2)
-
-                    #line counting
-                    cap.check_cross(id, obj_tail[obj_num.index(id)], lines)
-                    """
-                    for i, on_mouse, line, to_left, to_right in lines:
-                        i           #line_number
-                        to_left     #left_counting
-                        to_right    #right_counting
-                    """
-
-                    #insert to DB
-                    p_id = id
-                    today = datetime.today()
-                    today_date = today.date()
-                    today_time = today.strftime('%H:%M:%S')
-                    today_hour = int(today.strftime('%H'))
-                    index = 'time_' + str(today_hour + 1)
-                    try:
-                        TodayTraffic.objects.create(person_id=p_id, date=today_date, time=today_time)
-                    except IntegrityError:
-                        pass
-                    else:
-                        print("this is hour ", today_hour)
-                        target_row = TodayRecord.objects.first()
-                        target_row.__dict__[index] += 1
-                        target_row.save()
-
-                    # print(bboxes, id)
-
-            #####################################################################################################
-
-            #            bbox = (300, 100, 100, 150)
-            #            point = (350, 175)
-            #            cv2.rectangle(self.frame, bbox, (0, 255, 0), 1)
-            #            cv2.line(self.frame, point, point, (255, 255, 255), 5)
-            cap.line_count(self.frame, lines)
-            cv2.waitKey(self.delay)
+        #print('update: ', Cam_Alive)
+        self.frame = ot_q.get()
+        while Cam_Alive:
+            self.frame = ot_q.get()
+        #print('update killed')
 
 
 def gen(camera):
