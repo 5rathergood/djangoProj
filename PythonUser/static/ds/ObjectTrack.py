@@ -187,11 +187,12 @@ def ObjectTrack(q):
                     
                 bboxes[2] = output[2] - output[0]
                 bboxes[3] = output[3] - output[1]
-
+                
                 bboxes[0] = 2 * bboxes[0]
                 bboxes[1] = 2 * bboxes[1] - 20
                 bboxes[2] = 2 * bboxes[2]
                 bboxes[3] = 2 * bboxes[3]
+                
 
                 point = (int(bboxes[0] + bboxes[2] / 2), int(bboxes[1] + bboxes[3] / 2))
                 cv2.rectangle(frame, bboxes, (0, 255, 0), 2)
@@ -213,26 +214,12 @@ def ObjectTrack(q):
                 line_cap.check_cross(id, obj_tail[obj_num.index(id)], lines)
                 
         line_cap.line_count(frame, lines)
-        #cv2.imwrite('detectme/current.jpg', frame)
         q.put(frame)
         cv2.waitKey(delay)
 
-def stream():
-    
-    win_name = "Stream test"
-    cv2.namedWindow(win_name)
-    while True:
-        frame = cv2.imread('test.jpg', cv2.IMREAD_COLOR)
-        #print(frame)
-        cv2.imshow(win_name, frame)
-        key = cv2.waitKey(1000)
-        if key == 113:
-            break
-
-def main():
-    threading.Thread(target=ObjectTrack, args=()).start()
-    #cv2.waitKey(20000)
-    #stream()
-
-#main()
-
+        """
+        #datas for DB
+        for i, on_mouse, line, in_count, out_count in lines:
+            i             #라인 번호
+            len(in_count) #해당 라인으로 입장한 유동 인구 수
+        """
