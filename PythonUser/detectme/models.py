@@ -26,7 +26,13 @@ from django.utils import timezone
 #         conn.commit()
 #         cur.close()
 #         conn.close()
-
+#라인 정보
+class line_list(models.Model):
+    line_number = models.IntegerField(null=False)
+    line_one_x = models.IntegerField(null=False)
+    line_one_y = models.IntegerField(null=False)
+    line_two_x = models.IntegerField(null=False)
+    line_two_y = models.IntegerField(null=False)
 
 class TodayTraffic(models.Model):
     person_id = models.IntegerField(default=-1, primary_key=True)

@@ -48,6 +48,7 @@ if str(DSDIR) not in sys.path:
 from PythonUser.static.ds.deep_sort.utils.parser import get_config
 from PythonUser.static.ds.deep_sort.deep_sort import DeepSort
 
+import cap
 
 # Create your views here.
 
@@ -133,6 +134,28 @@ class VideoCamera(object):
         classes = 0
         agnostic_nms = False
         max_det = 1000
+
+        obj_num = []
+        obj_tail = []
+        '''
+        list불러오기 
+        2022.05.16 박병제
+        '''
+        lines = []
+        line_lists = line_list.objects.all()
+        for line_num in line_lists:
+            line = [line_num.line_number, False, [[line_num.line_one_x,line_num.line_one_y],[line_num.line_two_x,line_num.line_two_y]],[],[]]            
+            lines.append(line)
+        line_check = True
+        
+        # line management, run once
+        if line_check:
+            #print(len(im0s[0]))
+            cap.line_manage(self.frame, lines)
+            print(lines)
+            #print(type(im0s))
+            check = False
+        
         while True:
             (self.grabbed, self.frame) = self.video.read()
 
@@ -160,6 +183,7 @@ class VideoCamera(object):
             det = pred[0]
 
             # print(img.shape)
+            cap.draw_lines(self.frame, lines)
 
             if len(det):
                 # tracker
@@ -171,6 +195,12 @@ class VideoCamera(object):
                 for j, (output, conf) in enumerate(zip(outputs, confs)):
                     bboxes = output[0:4]
                     id = output[4]
+                    
+                    #object list
+                    if id not in obj_num:
+                        obj_num.append(id)
+                        obj_tail.insert(obj_num.index(id), [])
+                        
                     bboxes[2] = output[2] - output[0]
                     bboxes[3] = output[3] - output[1]
 
@@ -184,6 +214,25 @@ class VideoCamera(object):
                     cv2.line(self.frame, point, point, (255, 255, 255), 5)
                     cv2.putText(self.frame, str(id), (bboxes[0], bboxes[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0),
                                 1)
+
+                    #object tail track
+                    obj_tail[obj_num.index(id)].append(point)
+                    if len(obj_tail[obj_num.index(id)]) > 30:
+                        del obj_tail[obj_num.index(id)][0]
+
+                    for i in range(len(obj_tail[obj_num.index(id)]) - 1):
+                        tail_point1 = obj_tail[obj_num.index(id)][i]
+                        tail_point2 = obj_tail[obj_num.index(id)][i+1]
+                        cv2.line(self.frame, tail_point1, tail_point2, (0, 0, 255), 2)
+
+                    #line counting
+                    cap.check_cross(id, obj_tail[obj_num.index(id)], lines)
+                    """
+                    for i, on_mouse, line, to_left, to_right in lines:
+                        i           #line_number
+                        to_left     #left_counting
+                        to_right    #right_counting
+                    """
 
                     #insert to DB
                     p_id = id
@@ -210,6 +259,7 @@ class VideoCamera(object):
             #            point = (350, 175)
             #            cv2.rectangle(self.frame, bbox, (0, 255, 0), 1)
             #            cv2.line(self.frame, point, point, (255, 255, 255), 5)
+            cap.line_count(self.frame, lines)
             cv2.waitKey(self.delay)
 
 
@@ -231,56 +281,20 @@ def detectme(request):
 
 
 # using DB part
-from .models import TodayTraffic, TodayRecord, Record
+from .models import TodayTraffic, TodayRecord, Record, line_list
 
-# def db_list(request):
-#     if request.method == 'POST':
-#         traffic_db = TodayTraffic
-#         traffic_db.insertData(traffic_db, request.POST["p_id_text"])
-#         return redirect('db_list')
-#     else:
-#         traffic_list = TodayTraffic.objects.all()
-#         return render(request, "home.html", {"traffic_list": traffic_list})
-#
-#
-# def home(request):
-#     return render(request, 'home.html')
-#
-#
-# def statistics(request):
-#     traffic_list = TodayTraffic.objects.all()
-#     return render(request, 'statistics.html', {"traffic_list": traffic_list})
-#
-#
-# def analysis(request):
-#     return render(request, 'analysis.html')
 
 
 def home(request):
-    # if request.method == 'POST':
-    #     p_id = request.POST["p_id_text"]
-    #     today = datetime.today()
-    #     today_date = today.date()
-    #     today_time = today.strftime('%H:%M:%S')
-    #     try:
-    #         TodayTraffic.objects.create(person_id=p_id, date=today_date, time=today_time)
-    #     except IntegrityError:
-    #         pass
-    #     return redirect('home')
-    # else:
-
     #최초 실행시 today_record_list가 비어있다면 default row를 하나 생성
     today_record_list = TodayRecord.objects.all()
     if len(today_record_list) == 0:
         first_low = TodayRecord.objects.create()
         first_low.save()
 
-    #TodayTraffic.objects.bulk_update()
     traffic_list = TodayTraffic.objects.all()
 
     traffic_list = [traffic.get_person_id() for traffic in traffic_list]
-    #record_list = Record.objects.all()
-    #record_list = [record.get_values() for record in record_list]
     today_record_list = [today_record.get_values() for today_record in today_record_list]
     print(today_record_list)
 
@@ -340,6 +354,28 @@ def statistics(request):
     return render(request, 'statistics.html', return_object)
 
 
+def InitTodayTraffic(request):
+    TodayTraffic.objects.all().delete()
+
+    data = {
+        "state": "success"
+    }
+    return JsonResponse(data)
+
+
+def InitTodayRecord(request):
+    TodayRecord.objects.all().delete()
+    first_low = TodayRecord.objects.create()
+    first_low.save()
+
+    data = {
+        "state": "success"
+    }
+
+    return JsonResponse(data)
+
+
+
 def summary(request):
     return render(request, 'summary.html')
 
@@ -388,7 +424,7 @@ class AnalysisCreateView(View):
     '''
     def get(self, request : HttpRequest, *args, **kwargs):
         context = {}
-        context['attraction'] = "지역의 범위를 입력하시요."
+        context['attraction'] = "먼저 면적을 입력하세요"
         return render(request,'analysis.html',context)
     def post(self, request : HttpRequest, *args, **kwargs):
         context = {}
@@ -403,7 +439,7 @@ class AnalysisCreateView(View):
         #get_cur_shop_attraction
         get_cur_shop_attraction = calc_attraction/(calc_attraction + total_attraction)
         attraction = get_cur_shop_attraction * population
-        context['attraction'] = attraction
+        context['attraction'] = str(round(attraction * 100, 3)) + "%"
         return render(request, 'analysis.html',context)
 
 
