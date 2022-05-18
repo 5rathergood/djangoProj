@@ -20,10 +20,6 @@ import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
 
-#전역변수 선언
-Line_Manage_On = False
-
-
 # import yolov5
 ROOT = "static/ds"
 if str(ROOT) not in sys.path:
@@ -57,7 +53,6 @@ import queue
 import ObjectTrack as OT
 import time
 
-# Create your views here.
 ot_q = queue.Queue()
 line_q = queue.Queue()
 OT_thread = threading.Thread(target=OT.ObjectTrack,args=(ot_q, line_q))
@@ -65,9 +60,6 @@ OT_thread = threading.Thread(target=OT.ObjectTrack,args=(ot_q, line_q))
 
 Cam_Alive = False
 line_check = False
-
-#라인 그리기 창 실행 명령 전달
-#line_q.put(True)
 
 class VideoCamera(object):
     def __init__(self):
@@ -100,14 +92,12 @@ class VideoCamera(object):
 
     def update(self):
         global Cam_Alive, line_check
-        #print('update: ', Cam_Alive)
         self.frame = ot_q.get()
         while Cam_Alive:
             self.frame = ot_q.get()
             if line_check:
                 line_q.put(True)
                 line_check = False
-        #print('update killed')
 
 
 def gen(camera):
@@ -291,7 +281,6 @@ class AnalysisCreateView(View):
 
 class writelineView(View):
     def get(self, request:HttpRequest, *args,**kwargs):
-        
-        Line_Manage_On = True
+        line_q.put(True)
         return redirect('..')
 
