@@ -20,10 +20,6 @@ import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
 
-#전역변수 선언
-Line_Manage_On = False
-
-
 # import yolov5
 ROOT = "static/ds"
 if str(ROOT) not in sys.path:
@@ -57,13 +53,13 @@ import queue
 import ObjectTrack as OT
 import time
 
-# Create your views here.
-
 ot_q = queue.Queue()
-OT_thread = threading.Thread(target=OT.ObjectTrack,args=(ot_q,))
-OT_thread.start()
+line_q = queue.Queue()
+OT_thread = threading.Thread(target=OT.ObjectTrack,args=(ot_q, line_q))
+#OT_thread.start()
 
 Cam_Alive = False
+line_check = False
 
 class VideoCamera(object):
     def __init__(self):
@@ -82,8 +78,9 @@ class VideoCamera(object):
         Cam_Alive = True
         self.update_thread = threading.Thread(target=self.update, args=())
         self.update_thread.start()
-        #if not OT_thread.is_alive():
-        #    OT_thread.start()
+        if not OT_thread.is_alive():
+            line_q.put(True)
+            OT_thread.start()
 
     def __del__(self):
         print('cam delete')
@@ -94,11 +91,13 @@ class VideoCamera(object):
         return jpeg.tobytes()
 
     def update(self):
-        #print('update: ', Cam_Alive)
+        global Cam_Alive, line_check
         self.frame = ot_q.get()
         while Cam_Alive:
             self.frame = ot_q.get()
-        #print('update killed')
+            if line_check:
+                line_q.put(True)
+                line_check = False
 
 
 def gen(camera):
@@ -281,7 +280,7 @@ class AnalysisCreateView(View):
         return render(request, 'analysis.html',context)
 
 def write_line(request):
-    Line_Manage_On = True
+    line_q.put(True)
     data = {
         "state": "success"
     }

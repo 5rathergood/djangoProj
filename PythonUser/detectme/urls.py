@@ -16,4 +16,3 @@ urlpatterns = [
     path('analysis_create',views.AnalysisCreateView.as_view(),name='analysis_create'),
     path('summary', views.summary, name='summary'),
     path('write_line',views.write_line,name='write_line'),
-]
