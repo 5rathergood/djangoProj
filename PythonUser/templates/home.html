@@ -21,8 +21,27 @@
         <div class="col-lg-8">
           <div class="row">
             <div>
-              <a href = "{% url 'home:write_line' %}" type="submit" class="btn btn-primary">라인 그리기</a>
-            </div> 
+              <button id = "12" type="submit" class="btn btn-primary">라인그리기</button>
+            </div>
+            <script>
+              jQuery(document).ready(function () {
+                $('#12').click(function(){
+                      //alert("refresh");
+
+                      $.ajax({
+                          url: "write_line",
+                          type: 'GET',
+                          async: true,
+                          cache: false,
+
+                          success: function (response) {
+                              //closeLoadingDialog('#container');
+                              console.log(JSON.stringify(response));
+                          }
+                      });
+                  });
+              });
+            </script> 
             <!-- Sales Card -->
             <div class="col-12">
               <div class="card recent-sales overflow-auto ">

@@ -280,9 +280,10 @@ class AnalysisCreateView(View):
         context['attraction'] = str(round(attraction * 100, 3)) + "%"
         return render(request, 'analysis.html',context)
 
-class writelineView(View):
-    def get(self, request:HttpRequest, *args,**kwargs):
-        
-        Line_Manage_On = True
-        return redirect('..')
+def write_line(request):
+    Line_Manage_On = True
+    data = {
+        "state": "success"
+    }
+    return JsonResponse(data)
 
