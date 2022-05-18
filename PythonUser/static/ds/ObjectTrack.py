@@ -39,7 +39,7 @@ if str(DSDIR) not in sys.path:
 from PythonUser.static.ds.deep_sort.utils.parser import get_config
 from PythonUser.static.ds.deep_sort.deep_sort import DeepSort
 
-import cap as line_cap
+import line_cap as line_cap
 import threading
 
 FILE = Path(__file__).resolve()
