@@ -2,6 +2,7 @@ from datetime import date, time, datetime
 
 
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views import View
 from django.views.decorators import gzip
 from django.http import StreamingHttpResponse, JsonResponse, HttpRequest
@@ -18,6 +19,10 @@ from pathlib import Path
 import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
+
+#전역변수 선언
+Line_Manage_On = False
+
 
 # import yolov5
 ROOT = "static/ds"
@@ -275,4 +280,9 @@ class AnalysisCreateView(View):
         context['attraction'] = str(round(attraction * 100, 3)) + "%"
         return render(request, 'analysis.html',context)
 
+class writelineView(View):
+    def get(self, request:HttpRequest, *args,**kwargs):
+        
+        Line_Manage_On = True
+        return redirect('..')
 
