@@ -40,6 +40,11 @@ class TodayTraffic(models.Model):
         return self.date.strftime("%m")
 
 
+class lineRecord(models.Model):
+    line_id = models.IntegerField(null=False)
+    people_count = models.IntegerField(null=True,default=0)
+    cross_time = models.DateTimeField(null=True,default=timezone.now())
+
 #오늘 기록
 class TodayRecord(models.Model):
     all_count = models.IntegerField(default=0)
