@@ -1,3 +1,33 @@
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@qjrm69 
+5rathergood
+/
+djangoProj
+Public
+Code
+Issues
+Pull requests
+1
+Actions
+Projects
+Wiki
+Security
+Insights
+djangoProj/PythonUser/templates/home.html
+
+pj991207 박병제
+Latest commit adc1a1e 10 minutes ago
+ History
+ 2 contributors
+@2Sangyun@wlwhstjdgur
+847 lines (724 sloc)  38.2 KB
+   
 {% extends "base.html" %}
 {% load static %}
 
@@ -21,8 +51,27 @@
         <div class="col-lg-8">
           <div class="row">
             <div>
-              <a href = "{% url 'home:write_line' %}" type="submit" class="btn btn-primary">라인 그리기</a>
-            </div> 
+              <button id = "12" type="submit" class="btn btn-primary">라인그리기</button>
+            </div>
+            <script>
+              jQuery(document).ready(function () {
+                $('#12').click(function(){
+                      //alert("refresh");
+
+                      $.ajax({
+                          url: "write_line",
+                          type: 'GET',
+                          async: true,
+                          cache: false,
+
+                          success: function (response) {
+                              //closeLoadingDialog('#container');
+                              console.log(JSON.stringify(response));
+                          }
+                      });
+                  });
+              });
+            </script> 
             <!-- Sales Card -->
             <div class="col-12">
               <div class="card recent-sales overflow-auto ">
@@ -226,12 +275,9 @@
                       jQuery(document).ready(function () {
                           /*var list = "{{today_record_list}}".replace(/&#x27;/g, "\"");
                           const new_record_list = JSON.parse(list);
-
                           var record_data = [];
                           var record_keys = Object.keys(new_record_list[0]);
-
                           var record_list_len = record_keys.length;
-
                           for (var i = 1; i< record_list_len; ++i){
                             record_data.push(new_record_list[0][record_keys[i]]);
                             console.log(new_record_list[0][record_keys[i]]);
