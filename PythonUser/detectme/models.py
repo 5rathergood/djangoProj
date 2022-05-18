@@ -5,6 +5,7 @@ import django
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from sqlalchemy import false
 
 
 # Create your models here.
@@ -39,7 +40,11 @@ class TodayTraffic(models.Model):
     def get_month(self):
         return self.date.strftime("%m")
 
-
+class lineRecord(models.Model):
+    line_id = models.IntegerField(null=False)
+    people_count = models.IntegerField(null=True,default=0)
+    cross_time = models.DateTimeField(null=True,default=timezone.now())
+    
 #오늘 기록
 class TodayRecord(models.Model):
     all_count = models.IntegerField(default=0)

@@ -9,6 +9,7 @@ import cv2
 import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
+from PythonUser.detectme.models import lineRecord
 
 # import yolov5
 ROOT = "static/ds"
@@ -217,9 +218,14 @@ def ObjectTrack(q):
         q.put(frame)
         cv2.waitKey(delay)
 
-        """
+        from django.utils import timezone
         #datas for DB
         for i, on_mouse, line, in_count, out_count in lines:
-            i             #라인 번호
-            len(in_count) #해당 라인으로 입장한 유동 인구 수
-        """
+           # i             #라인 번호
+           # len(in_count) #해당 라인으로 입장한 유동 인구 수
+           lineRecord.objects.create(
+               line_id = int(i),
+               people_count = int(len(in_count)),
+               time = timezone.now()
+           )
+
