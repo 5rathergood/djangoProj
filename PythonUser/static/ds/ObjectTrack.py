@@ -42,6 +42,7 @@ from PythonUser.static.ds.deep_sort.deep_sort import DeepSort
 
 import line_cap as line_cap
 import threading
+from django.utils import timezone
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # yolov5 deepsort root directory
@@ -51,7 +52,7 @@ ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 
 
-def ObjectTrack(q):
+def ObjectTrack(q, line_check):
     weights = "static/ds/yolov5/yolov5s.pt"
     source = "static/OTtest.mp4"
     data = "static/ds/yolov5/data/coco128.yaml"
@@ -131,18 +132,25 @@ def ObjectTrack(q):
     #cap.line_load(lines)
     #line_lists = line_list.objects.all()        
 
-    line_check = True
+    #line_check = True
     
-    # line management, run once
-    if line_check:
-        #print(len(im0s[0]))
-        line_cap.line_manage(frame, lines)
-        print(lines)
-        #print(type(im0s))
-        check = False
     
     while True:
         (grabbed, frame) = video.read()
+
+
+        # line management, run once
+        #print(line_check)
+        check = False
+        if not line_check.empty():
+            check = line_check.get()
+            while not line_check.empty():
+                line_check.get()
+        if check:
+            #print(len(im0s[0]))
+            line_cap.line_manage(frame, lines)
+            print(lines)
+            #print(type(im0s))
 
         # Padded resize
         img = letterbox(frame, imgsz, stride=stride)[0]
@@ -218,7 +226,6 @@ def ObjectTrack(q):
         q.put(frame)
         cv2.waitKey(delay)
         
-        from django.utils import timezone
         #datas for DB
         for i, on_mouse, line, in_count, out_count in lines:
            # i             #라인 번호
@@ -226,5 +233,5 @@ def ObjectTrack(q):
            lineRecord.objects.create(
                line_id = int(i),
                people_count = int(len(in_count)),
-               time = timezone.now()
+               cross_time = timezone.now()
            )

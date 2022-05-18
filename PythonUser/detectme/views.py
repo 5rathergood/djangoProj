@@ -53,12 +53,15 @@ import ObjectTrack as OT
 import time
 
 # Create your views here.
-
 ot_q = queue.Queue()
-OT_thread = threading.Thread(target=OT.ObjectTrack,args=(ot_q,))
-OT_thread.start()
+line_q = queue.Queue()
+OT_thread = threading.Thread(target=OT.ObjectTrack,args=(ot_q, line_q))
+#OT_thread.start()
 
 Cam_Alive = False
+
+#라인 그리기 창 실행 명령 전달
+#line_q.put(True)
 
 class VideoCamera(object):
     def __init__(self):
@@ -77,8 +80,9 @@ class VideoCamera(object):
         Cam_Alive = True
         self.update_thread = threading.Thread(target=self.update, args=())
         self.update_thread.start()
-        #if not OT_thread.is_alive():
-        #    OT_thread.start()
+        if not OT_thread.is_alive():
+            line_q.put(True)
+            OT_thread.start()
 
     def __del__(self):
         print('cam delete')
@@ -89,6 +93,7 @@ class VideoCamera(object):
         return jpeg.tobytes()
 
     def update(self):
+        global Cam_Alive
         #print('update: ', Cam_Alive)
         self.frame = ot_q.get()
         while Cam_Alive:
