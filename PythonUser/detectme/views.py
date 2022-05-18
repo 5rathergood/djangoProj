@@ -59,6 +59,7 @@ OT_thread = threading.Thread(target=OT.ObjectTrack,args=(ot_q, line_q))
 #OT_thread.start()
 
 Cam_Alive = False
+line_check = False
 
 #라인 그리기 창 실행 명령 전달
 #line_q.put(True)
@@ -93,11 +94,14 @@ class VideoCamera(object):
         return jpeg.tobytes()
 
     def update(self):
-        global Cam_Alive
+        global Cam_Alive, line_check
         #print('update: ', Cam_Alive)
         self.frame = ot_q.get()
         while Cam_Alive:
             self.frame = ot_q.get()
+            if line_check:
+                line_q.put(True)
+                line_check = False
         #print('update killed')
 
 
