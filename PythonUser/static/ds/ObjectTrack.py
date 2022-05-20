@@ -59,6 +59,8 @@ def ObjectTrack(q, line_check):
     weights = "static/ds/yolov5/yolov5s.pt"
     source = "static/OTtest.mp4"
     #source = "rtsp://10.20.3.121:8080/h264_ulaw.sdp"
+    #source = 'rtsp://admin:5glfuwhgdk@192.168.0.11:554/ISAPI/streaming/channels/101？transportmode=multicast'
+    
     data = "static/ds/yolov5/data/coco128.yaml"
     imgsz = [640, 640]
     device = ''
@@ -141,6 +143,10 @@ def ObjectTrack(q, line_check):
     
     while True:
         (grabbed, frame) = video.read()
+        #print(grabbed)
+        if not grabbed:
+            video = cv2.VideoCapture(source)
+            continue
 
 
         # line management, run once
@@ -264,7 +270,7 @@ def ObjectTrack(q, line_check):
                         target_row = TodayRecord.objects.first()
                         target_row.__dict__[index] += 1
                         target_row.save()
-                print(alley_people)
+                #print(alley_people)
 
             else:
                lineRecord.objects.create(
