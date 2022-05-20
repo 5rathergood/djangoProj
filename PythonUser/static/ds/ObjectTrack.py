@@ -9,7 +9,10 @@ import cv2
 import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
-from detectme.models import lineRecord
+
+from django.db import IntegrityError
+from datetime import date, time, datetime
+from detectme.models import TodayTraffic, TodayRecord, lineRecord
 
 # import yolov5
 ROOT = "static/ds"
@@ -55,6 +58,7 @@ ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 def ObjectTrack(q, line_check):
     weights = "static/ds/yolov5/yolov5s.pt"
     source = "static/OTtest.mp4"
+    #source = "rtsp://10.20.3.121:8080/h264_ulaw.sdp"
     data = "static/ds/yolov5/data/coco128.yaml"
     imgsz = [640, 640]
     device = ''
@@ -227,11 +231,44 @@ def ObjectTrack(q, line_check):
         cv2.waitKey(delay)
         
         #datas for DB
-        for i, on_mouse, line, in_count, out_count in lines:
+        alley_people = []
+        for i, on_mouse, line, out_count, in_count in lines:
            # i             #라인 번호
            # len(in_count) #해당 라인으로 입장한 유동 인구 수
-           lineRecord.objects.create(
-               line_id = int(i),
-               people_count = int(len(in_count)),
-               cross_time = timezone.now()
-           )
+            if i == 0:
+                alley_people += in_count
+
+            elif i == 1:
+                alley_people += in_count
+                alley_people = list(set(alley_people))
+                
+                lineRecord.objects.create(
+                    line_id = int(i),
+                    people_count = int(len(alley_people)),
+                    cross_time = timezone.now()
+                )
+                for person_id in alley_people:
+                    #TodayTraffic & TodayRecord DB insert
+                    p_id = person_id
+                    today = datetime.today()
+                    today_date = today.date()
+                    today_time = today.strftime('%H:%M:%S')
+                    today_hour = int(today.strftime('%H'))
+                    index = 'time_' + str(today_hour + 1)
+                    try:
+                        TodayTraffic.objects.create(person_id=p_id, date=today_date, time=today_time)
+                    except IntegrityError:
+                        pass
+                    else:
+                        print("this is hour ", today_hour)
+                        target_row = TodayRecord.objects.first()
+                        target_row.__dict__[index] += 1
+                        target_row.save()
+                print(alley_people)
+
+            else:
+               lineRecord.objects.create(
+                   line_id = int(i),
+                   people_count = int(len(in_count)),
+                   cross_time = timezone.now()
+               )
