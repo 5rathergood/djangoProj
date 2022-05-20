@@ -250,7 +250,8 @@ def summary(request):
 #         record_list = Record.objects.all()
 #         record_list = [record.get_values() for record in record_list]
 #         return render(request, 'analysis.html', {"record_list": record_list})
-
+import datetime
+from django.db.models import Count
 class AnalysisCreateView(View):
     '''
     2022.05.05
@@ -266,24 +267,34 @@ class AnalysisCreateView(View):
 
 
     def post(self, request : HttpRequest):
+        pre_month = (int(datetime.datetime.now().month) - 1) % 12
+        if pre_month < 10:
+            month = '0' + str(pre_month)
+        else:
+            month = str(pre_month)
+        total_cnt = 0
+        previous_month_db = Record.objects.all().filter(count_date__month=month)
+        for previous_month_day_db in previous_month_db:
+            total_cnt += previous_month_day_db.get_count_and_month()['all_count']
         context = {}
         area = int(request.POST['area'])
-        per_cost = int(request.POST['per_cost']) #1인당 평균매출량(사용자입력)
-        #distance = int(reqeust.POST['dis'])
+        per_cost = int(request.POST['per_cost']) # 1인당 평균매출량(사용자입력)
+        # distance = int(reqeust.POST['dis'])
         distance = 100
-        population = 200 # 유동인구
-        total_attraction = 2.9917 #상수 값임 get_cur_shop_attraction() 함수를 사용할 때 쓰여야함
-        #calc_attraction
+        population = total_cnt
+        # population = 200 # 유동인구
+        total_attraction = 2.9917 # 상수 값임 get_cur_shop_attraction() 함수를 사용할 때 쓰여야함
+            # calc_attraction
         calc_attraction = area/(pow(distance, 2))
-
-        #get_cur_shop_attraction
+            # get_cur_shop_attraction
         total_attraction += calc_attraction
         get_cur_shop_attraction = calc_attraction / total_attraction
+        get_cur_shop_attraction *= 13
         attraction = get_cur_shop_attraction * population
         percent = str(round(get_cur_shop_attraction * 100, 3)) + "%"
-        precost = str(round(attraction * 100, 3)*per_cost) + "원"
+        precost = str(format(int(round(attraction * per_cost, 3)), ',')) + " 원"
         context = {'attraction':percent, 'predict_cost':precost, 'popul':population, 'distance':distance }
-        #context['attraction' : ] = percent
+            #context['attraction' : ] = percent
         return render(request, 'analysis.html',context)
 
 def write_line(request):
