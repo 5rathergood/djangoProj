@@ -277,9 +277,10 @@ class AnalysisCreateView(View):
         calc_attraction = area/(pow(distance, 2))
 
         #get_cur_shop_attraction
-        get_cur_shop_attraction = calc_attraction/(calc_attraction + total_attraction)
+        total_attraction += calc_attraction
+        get_cur_shop_attraction = calc_attraction / total_attraction
         attraction = get_cur_shop_attraction * population
-        percent = str(round(attraction * 100, 3)) + "%"
+        percent = str(round(get_cur_shop_attraction * 100, 3)) + "%"
         precost = str(round(attraction * 100, 3)*per_cost) + "원"
         context = {'attraction':percent, 'predict_cost':precost, 'popul':population, 'distance':distance }
         #context['attraction' : ] = percent
