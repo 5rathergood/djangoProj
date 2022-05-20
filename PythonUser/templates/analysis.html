@@ -150,6 +150,7 @@ kakao.maps.event.addListener(map, 'rightclick', function (mouseEvent) {
 
             // 그려진 선의 거리정보를 지도에 표시합니다
             showDistance(content, path[path.length-1]);
+            document.getElementById('display_distance').value = distance;    
 
         } else {
 
@@ -300,7 +301,7 @@ function getTimeHTML(distance) {
                    <form method="post" action="{% url 'home:analysis_create' %}">
                 {% csrf_token %}
                   <p>가게면적 :<input type="text" name="area"><br>
-                      측정상권거리:<input type="text" name="dis" id="dis" value="측정 중.."><br>
+                      측정상권거리:<input type="text" name="dis" id="display_distance" value="측정 중.."><br>
                       1인당 평균 매출량: <input type="text" name="per_cost"></p>
                 <button type="submit" class="btn btn-primary">분석</button>
               </form>
