@@ -259,24 +259,30 @@ class AnalysisCreateView(View):
     문제 1.유동인구 db연결
         2.도로명 주소를 통해 찾기
     '''
-    def get(self, request : HttpRequest, *args, **kwargs):
-        context = {}
-        context['attraction'] = "먼저 면적을 입력하세요"
+    def get(self, request : HttpRequest):
+        context = {'attraction':"분석 버튼을 클릭하세요" , 'predict_cost':"분석버튼을 클릭하세요",'popul':"분석버튼을 클릭하세요",'distance':"분석버튼을 클릭하세요"}
+        #context['attraction','predict_cost'] = "먼저 면적을 입력하세요"
         return render(request,'analysis.html',context)
-    def post(self, request : HttpRequest, *args, **kwargs):
-        context = {}
 
+
+    def post(self, request : HttpRequest):
+        context = {}
         area = int(request.POST['area'])
-        population = 10 # 유동인구
+        per_cost = int(request.POST['per_cost']) #1인당 평균매출량(사용자입력)
+        #distance = int(reqeust.POST['dis'])
+        distance = 100
+        population = 200 # 유동인구
         total_attraction = 2.9917 #상수 값임 get_cur_shop_attraction() 함수를 사용할 때 쓰여야함
-        distance = 100 #거리값은 변경되어야함 수동으로 입력
         #calc_attraction
         calc_attraction = area/(pow(distance, 2))
 
         #get_cur_shop_attraction
         get_cur_shop_attraction = calc_attraction/(calc_attraction + total_attraction)
         attraction = get_cur_shop_attraction * population
-        context['attraction'] = str(round(attraction * 100, 3)) + "%"
+        percent = str(round(attraction * 100, 3)) + "%"
+        precost = str(round(attraction * 100, 3)*per_cost) + "원"
+        context = {'attraction':percent, 'predict_cost':precost, 'popul':population, 'distance':distance }
+        #context['attraction' : ] = percent
         return render(request, 'analysis.html',context)
 
 def write_line(request):

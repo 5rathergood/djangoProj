@@ -116,7 +116,6 @@ kakao.maps.event.addListener(map, 'mousemove', function (mouseEvent) {
 
         var distance = Math.round(clickLine.getLength() + moveLine.getLength()), // 선의 총 거리를 계산합니다
             content = '<div class="dotOverlay distanceInfo">총거리 <span class="number">' + distance + '</span>m</div>'; // 커스텀오버레이에 추가될 내용입니다
-
         // 거리정보를 지도에 표시합니다
         showDistance(content, mousePosition);
     }
@@ -146,6 +145,7 @@ kakao.maps.event.addListener(map, 'rightclick', function (mouseEvent) {
             }
 
             var distance = Math.round(clickLine.getLength()), // 선의 총 거리를 계산합니다
+
                 content = getTimeHTML(distance); // 커스텀오버레이에 추가될 내용입니다
 
             // 그려진 선의 거리정보를 지도에 표시합니다
@@ -299,7 +299,9 @@ function getTimeHTML(distance) {
 </script>
                    <form method="post" action="{% url 'home:analysis_create' %}">
                 {% csrf_token %}
-                  <p>범위 :<input type="text" name="area"></p>
+                  <p>가게면적 :<input type="text" name="area"><br>
+                      측정상권거리:<input type="text" name="dis" id="dis" value="측정 중.."><br>
+                      1인당 평균 매출량: <input type="text" name="per_cost"></p>
                 <button type="submit" class="btn btn-primary">분석</button>
               </form>
               </div>
@@ -314,7 +316,12 @@ function getTimeHTML(distance) {
                   <h1 class="card-title"> 결과 </h1>
                 </div>
                 <h2 class="card-title"> 분석 결과</h2>
-                  <p>상권 분석률 : {{attraction}}</p>
+                  <p> 영상의 총 유동인구량 : {{popul}}<br>
+                      유동권까지 거리 : {{distance}}<br>
+                      예상 방문율 : {{attraction}}<br>
+                      예상 매출량 : {{predict_cost}}
+
+                  </p>
               </form>
               </div>
             </div>
